@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo-Übersicht – Drei Pakete, neun Branchen</title>
+  <meta name="description" content="Übersicht der neun Demo-Websites: je drei Beispiele für Basic, Professional und Premium – mit Erklärung, warum sich die Pakete im Preis unterscheiden.">
+  <meta name="robots" content="noindex">
+  <style>
+    /* Hub page: nine tier demos + pricing rationale */
+    :root {
+      --ink: #10151C; --paper: #F5F2EC; --fog: #6A7683; --line: #E3DCCE;
+      --basic: #C4692F; --pro: #B08D57; --premium: #FF5A36;
+      --basic-soft: #F7E8DC; --pro-soft: #F1E9DA; --premium-soft: #FFE4DC;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--paper); color: var(--ink);
+      padding: 3.5rem 1.5rem 4rem; line-height: 1.6;
+    }
+    .wrap { max-width: 1180px; margin-inline: auto; }
+    h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); letter-spacing: -0.02em; line-height: 1.12; }
+    .sub { color: var(--fog); margin: 0.8rem 0 3rem; max-width: 64ch; }
+
+    /* ---- Tier columns ---- */
+    .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+    @media (max-width: 960px) { .tiers { grid-template-columns: 1fr; } }
+
+    .tier {
+      background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 1.8rem 1.6rem; display: flex; flex-direction: column; gap: 1.2rem;
+    }
+    .tier--premium { border-color: var(--premium); box-shadow: 0 24px 50px -34px rgba(255, 90, 54, 0.55); }
+
+    .tier__head .tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 800;
+      letter-spacing: 0.24em; text-transform: uppercase; color: #fff;
+      border-radius: 999px; padding: 0.3rem 0.85rem;
+    }
+    .t-basic .tag { background: var(--basic); }
+    .t-pro .tag { background: var(--pro); }
+    .t-premium .tag { background: var(--premium); }
+
+    .tier__price { margin-top: 0.9rem; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; }
+    .tier__price small { font-size: 0.8rem; font-weight: 500; color: var(--fog); display: block; }
+
+    .tier__pitch { color: var(--fog); font-size: 0.92rem; }
+
+    .tier__features { list-style: none; font-size: 0.88rem; display: grid; gap: 0.45rem; }
+    .tier__features li { padding-left: 1.5rem; position: relative; }
+    .tier__features li::before { content: "✓"; position: absolute; left: 0; font-weight: 800; }
+    .t-basic .tier__features li::before { color: var(--basic); }
+    .t-pro .tier__features li::before { color: var(--pro); }
+    .t-premium .tier__features li::before { color: var(--premium); }
+    .tier__features li.plus { font-weight: 700; }
+    .tier__features li.plus::before { content: "+"; }
+
+    .tier__demos { display: grid; gap: 0.7rem; margin-top: auto; }
+    .tier__demos-label {
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--fog);
+    }
+    a.demo {
+      display: block; text-decoration: none; color: inherit;
+      border: 1px solid var(--line); border-radius: 10px; padding: 0.85rem 1rem;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    a.demo:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgba(16, 21, 28, 0.4); }
+    .t-basic a.demo:hover { background: var(--basic-soft); }
+    .t-pro a.demo:hover { background: var(--pro-soft); }
+    .t-premium a.demo:hover { background: var(--premium-soft); }
+    a.demo strong { display: block; font-size: 0.98rem; }
+    a.demo span { color: var(--fog); font-size: 0.82rem; }
+
+    /* ---- Why the price difference ---- */
+    .why { margin-top: 4rem; }
+    .why h2 { font-size: clamp(1.4rem, 2.6vw, 1.9rem); margin-bottom: 0.5rem; }
+    .why > p { color: var(--fog); max-width: 70ch; margin-bottom: 1.8rem; }
+
+    .why-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    tr:last-child th, tr:last-child td { border-bottom: 0; }
+    thead th { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fog); }
+    thead th:nth-child(2) { color: var(--basic); }
+    thead th:nth-child(3) { color: var(--pro); }
+    thead th:nth-child(4) { color: var(--premium); }
+    tbody th { font-weight: 700; white-space: nowrap; }
+    td .dim { color: var(--fog); }
+
+    .drivers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 1.8rem; }
+    @media (max-width: 960px) { .drivers { grid-template-columns: 1fr; } }
+    .driver { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 1.4rem 1.4rem; }
+    .driver h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+    .driver p { color: var(--fog); font-size: 0.88rem; }
+
+    /* ---- Decision helper ---- */
+    .decide { margin-top: 4rem; }
+    .decide h2 { font-size: clamp(1.4rem, 2.6vw, 1.9rem); margin-bottom: 1.4rem; }
+    .decide__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    @media (max-width: 960px) { .decide__grid { grid-template-columns: 1fr; } }
+    .decide__card {
+      background: #fff; border: 1px solid var(--line); border-radius: 14px;
+      padding: 1.5rem 1.5rem 1.3rem; display: flex; flex-direction: column;
+    }
+    .decide__card h3 { font-size: 1.02rem; margin-bottom: 0.5rem; }
+    .decide__card p { color: var(--fog); font-size: 0.9rem; flex: 1; }
+    .decide__pick {
+      margin-top: 1rem; font-weight: 700; font-size: 0.9rem;
+      color: var(--ink); text-decoration: none;
+    }
+    .decide__card:nth-child(1) .decide__pick { color: var(--basic); }
+    .decide__card:nth-child(2) .decide__pick { color: var(--pro); }
+    .decide__card:nth-child(3) .decide__pick { color: var(--premium); }
+    .decide__pick:hover { text-decoration: underline; }
+
+    /* ---- PDF handout ---- */
+    .handout { margin-top: 4rem; }
+    .handout h2 { font-size: clamp(1.4rem, 2.6vw, 1.9rem); margin-bottom: 0.6rem; }
+    .handout > p { color: var(--fog); max-width: 70ch; margin-bottom: 1rem; }
+    .handout__actions { margin-bottom: 1rem; }
+    .handout__btn {
+      display: inline-block; text-decoration: none; font-weight: 700;
+      color: #fff; background: var(--ink); border-radius: 10px;
+      padding: 0.7rem 1rem;
+    }
+    .handout__btn:hover { opacity: 0.92; }
+    .handout__preview {
+      width: 100%; min-height: 680px; background: #fff;
+      border: 1px solid var(--line); border-radius: 14px;
+    }
+    @media (max-width: 960px) {
+      .handout__preview { min-height: 520px; }
+    }
+
+    footer { margin-top: 3.5rem; color: var(--fog); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Drei Pakete. Neun Branchen.<br>Ein ehrlicher Preisvergleich.</h1>
+    <p class="sub">
+      Jede Demo zeigt den vollen Funktionsumfang eines Service-Pakets, umgesetzt für eine typische
+      Hamburger Branche. Drei Beispiele pro Paket – damit sichtbar wird, was gleich bleibt (das Paket)
+      und was sich ändert (Branche, Design, Inhalt).
+    </p>
+
+    <!-- ===== Tier columns with demos ===== -->
+    <div class="tiers">
+
+      <!-- BASIC -->
+      <section class="tier t-basic" aria-labelledby="tier-basic">
+        <div class="tier__head">
+          <span class="tag" id="tier-basic">Basic</span>
+          <p class="tier__price">1.000&nbsp;€ <small>Beispielpreis · einmalig</small></p>
+        </div>
+        <p class="tier__pitch">
+          Für kleine Betriebe, die professionell gefunden werden wollen:
+          eine Seite, die alles Wichtige sagt – schnell, sauber, responsiv.
+        </p>
+        <ul class="tier__features">
+          <li>One-Pager, voll responsiv</li>
+          <li>Kontaktformular mit Validierung</li>
+          <li>Basis-SEO (Title, Description, Canonical)</li>
+          <li>Schnelle Ladezeiten, keine JS-Bibliotheken</li>
+          <li>Analytics-Vorbereitung</li>
+          <li>2 Revisionsrunden</li>
+        </ul>
+        <div class="tier__demos">
+          <span class="tier__demos-label">3 Demos ansehen</span>
+          <a class="demo" href="gastro-basic/index.html">
+            <strong>Röstwerk Ottensen</strong>
+            <span>Café &amp; Rösterei · Speisekarte, Galerie, Kontakt</span>
+          </a>
+          <a class="demo" href="friseur-basic/index.html">
+            <strong>Haarwerk Winterhude</strong>
+            <span>Friseursalon · Preisliste, Team, Terminanfrage</span>
+          </a>
+          <a class="demo" href="tischlerei-basic/index.html">
+            <strong>Tischlerei Holtkamp</strong>
+            <span>Handwerk · Leistungen, Referenzen, Projektanfrage</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- PROFESSIONAL -->
+      <section class="tier t-pro" aria-labelledby="tier-pro">
+        <div class="tier__head">
+          <span class="tag" id="tier-pro">Professional</span>
+          <p class="tier__price">1.750&nbsp;€ <small>Beispielpreis · einmalig</small></p>
+        </div>
+        <p class="tier__pitch">
+          Für Unternehmen, die Vertrauen verkaufen: mehrere Seiten, spürbare
+          Bewegung und SEO, das über Meta-Tags hinausgeht.
+        </p>
+        <ul class="tier__features">
+          <li class="plus">Alles aus Basic, plus:</li>
+          <li>Bis zu 5 individuelle Seiten</li>
+          <li>Scroll-Animationen, Zähler, Timelines</li>
+          <li>Advanced SEO: JSON-LD, Open Graph, sitemap.xml</li>
+          <li>Google Business Profile-Einrichtung</li>
+          <li>Interaktive Elemente (z. B. Filter)</li>
+          <li>Unbegrenzte Revisionen</li>
+        </ul>
+        <div class="tier__demos">
+          <span class="tier__demos-label">3 Demos ansehen</span>
+          <a class="demo" href="immobilien-professional/index.html">
+            <strong>Elbstein Immobilien</strong>
+            <span>Makler · Objektfilter, Zähler, GBP-Callout</span>
+          </a>
+          <a class="demo" href="zahnarzt-professional/index.html">
+            <strong>Elbzahn Eppendorf</strong>
+            <span>Zahnarztpraxis · Behandlungs-Timeline, FAQ, Rezensionen</span>
+          </a>
+          <a class="demo" href="architektur-professional/index.html">
+            <strong>Fleetwerk Architekten</strong>
+            <span>Architekturbüro · Projektfilter, HOAI-Timeline, editorialer Look</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- PREMIUM -->
+      <section class="tier t-premium tier--premium" aria-labelledby="tier-premium">
+        <div class="tier__head">
+          <span class="tag" id="tier-premium">Premium</span>
+          <p class="tier__price">2.750&nbsp;€ <small>Beispielpreis · einmalig</small></p>
+        </div>
+        <p class="tier__pitch">
+          Für Unternehmen, die Differenzierung kaufen: ein eigenes Designsystem,
+          eine individuell entwickelte interaktive Erfahrung und Texte vom Profi.
+          Deshalb drei völlig verschiedene Layout-Systeme – Premium heißt:
+          kein Raster von der Stange.
+        </p>
+        <ul class="tier__features">
+          <li class="plus">Alles aus Professional, plus:</li>
+          <li>Individuelle 3D-/Canvas-Erfahrung (eigens programmiert)</li>
+          <li>Volle Art Direction: eigenes Farb-, Schrift- &amp; Komponentensystem</li>
+          <li>Professionelles Copywriting inklusive</li>
+          <li>Performance-Engineering (pausiert offscreen, reduced-motion)</li>
+          <li>Priority Support &amp; begleiteter Launch</li>
+        </ul>
+        <div class="tier__demos">
+          <span class="tier__demos-label">3 Demos ansehen</span>
+          <a class="demo" href="maritim-premium/index.html">
+            <strong>Nordmeridian Logistik</strong>
+            <span>Spedition · 3D-Globus, klassisch-vertikale Dramaturgie in Dunkelblau</span>
+          </a>
+          <a class="demo" href="windenergie-premium/index.html">
+            <strong>Elbwind Offshore</strong>
+            <span>Windenergie · Leitwarten-Layout: Split-Hero mit Live-Telemetrie, nummerierte Einsatzzeilen</span>
+          </a>
+          <a class="demo" href="aviation-premium/index.html">
+            <strong>Hanseatic Aerotec</strong>
+            <span>Luftfahrt · Technische-Zeichnung-Layout: Titelblock-Hero, Typenschild, Bento-Grid – hell</span>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== Decision helper ===== -->
+    <section class="decide" aria-labelledby="decide-title">
+      <h2 id="decide-title">Unsicher? Drei Fragen genügen.</h2>
+      <div class="decide__grid">
+        <article class="decide__card">
+          <h3>„Ich muss erst einmal gefunden werden.“</h3>
+          <p>Kleiner Betrieb, klare Leistung, Laufkundschaft oder Empfehlung – die Website muss seriös aussehen, schnell laden und Anfragen annehmen. Mehr nicht.</p>
+          <a class="decide__pick" href="#tier-basic">→ Basic ansehen</a>
+        </article>
+        <article class="decide__card">
+          <h3>„Ich verkaufe Vertrauen – und Google entscheidet mit.“</h3>
+          <p>Kund:innen vergleichen Sie mit Wettbewerbern, lesen Rezensionen und wollen Team, Leistungen und Referenzen sehen. Sichtbarkeit und Auftritt müssen mitspielen.</p>
+          <a class="decide__pick" href="#tier-pro">→ Professional ansehen</a>
+        </article>
+        <article class="decide__card">
+          <h3>„Ich will aussehen wie der Marktführer.“</h3>
+          <p>B2B, hohe Auftragswerte, konservative Branche: Die Website ist Ihr stärkstes Verkaufsargument, bevor jemand anruft. Differenzierung ist das Ziel – nicht Vollständigkeit.</p>
+          <a class="decide__pick" href="#tier-premium">→ Premium ansehen</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== Why the price difference ===== -->
+    <section class="why" aria-labelledby="why-title">
+      <h2 id="why-title">Warum kostet Premium mehr als Basic?</h2>
+      <p>
+        Nicht wegen „mehr Design-Geschmack“, sondern wegen messbar mehr Arbeit.
+        Die Tabelle zeigt dieselben fünf Kostentreiber über alle drei Pakete –
+        jede Zeile lässt sich in den Demos direkt nachprüfen.
+      </p>
+
+      <div class="why-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Kostentreiber</th>
+              <th scope="col">Basic</th>
+              <th scope="col">Professional</th>
+              <th scope="col">Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Umfang</th>
+              <td>1 Seite</td>
+              <td>5 Seiten + Sitemap</td>
+              <td>5 Seiten + Sitemap</td>
+            </tr>
+            <tr>
+              <th scope="row">Bewegung &amp; Interaktion</th>
+              <td><span class="dim">Nur Hover-Effekte</span></td>
+              <td>Scroll-Reveals, animierte Zähler, Timelines, Filter</td>
+              <td>Alles aus Professional + eigens programmierte Canvas-/WebGL-Erfahrung</td>
+            </tr>
+            <tr>
+              <th scope="row">SEO-Tiefe</th>
+              <td>Meta-Tags</td>
+              <td>+ JSON-LD, Open Graph, Breadcrumbs, sitemap.xml, GBP</td>
+              <td>wie Professional</td>
+            </tr>
+            <tr>
+              <th scope="row">Design</th>
+              <td>Sauberes Template-Niveau</td>
+              <td>Kuratierte Typografie &amp; Farbwelt</td>
+              <td>Komplettes eigenes Designsystem (Farben, Schriften, Komponenten, Mono-Labels)</td>
+            </tr>
+            <tr>
+              <th scope="row">Inhalte</th>
+              <td><span class="dim">Texte vom Kunden</span></td>
+              <td><span class="dim">Texte vom Kunden</span></td>
+              <td>Professionelles Copywriting inklusive</td>
+            </tr>
+            <tr>
+              <th scope="row">Betreuung</th>
+              <td>2 Revisionsrunden</td>
+              <td>Unbegrenzte Revisionen</td>
+              <td>Priority Support &amp; begleiteter Launch</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="drivers">
+        <article class="driver">
+          <h3>Basic = 1 Baustelle</h3>
+          <p>
+            Eine Seite, ein Formular, ein Design-Durchlauf. Der Aufwand ist klar
+            begrenzt – deshalb ist es der günstigste Einstieg. Vergleichen Sie:
+            Die Basic-Demos haben bewusst <em>keine</em> Scroll-Animationen und
+            kein strukturiertes SEO-Markup.
+          </p>
+        </article>
+        <article class="driver">
+          <h3>Professional = 5 Baustellen + Sichtbarkeit</h3>
+          <p>
+            Fünfmal Inhalt, Navigation und Motion-Feinschliff – plus SEO-Arbeit,
+            die Google wirklich liest (JSON-LD, Breadcrumbs, Sitemap) und ein
+            eingerichtetes Google Business Profile. Scrollen Sie durch Elbzahn
+            oder Fleetwerk: Alles bewegt sich, alles ist verlinkbar.
+          </p>
+        </article>
+        <article class="driver">
+          <h3>Premium = Individualentwicklung</h3>
+          <p>
+            Der Globus, das Windfeld, die Flugrouten: Das sind keine Plugins,
+            sondern eigens geschriebener Code mit Performance-Absicherung.
+            Dazu ein Designsystem, das es nur einmal gibt, und fertige Texte.
+            Das ist Agenturarbeit im Wochenmaßstab – daher der Preis.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="handout" aria-labelledby="handout-title">
+      <h2 id="handout-title">Verkaufsleitfaden (PDF)</h2>
+      <p>
+        Der Leitfaden ist direkt eingebunden und kann auch separat heruntergeladen werden.
+      </p>
+      <p class="handout__actions">
+        <a class="handout__btn" href="Verkaufsleitfaden-Websites.md.pdf" target="_blank" rel="noopener" download>
+          PDF herunterladen
+        </a>
+      </p>
+      <iframe
+        class="handout__preview"
+        src="Verkaufsleitfaden-Websites.md.pdf"
+        title="Vorschau Verkaufsleitfaden PDF"
+      ></iframe>
+    </section>
+
+    <footer>
+      Demo-Suite · Alle Unternehmen fiktiv · Beispielpreise als Platzhalter – bitte an die eigene Kalkulation anpassen · Details im README.md
+    </footer>
+  </main>
+</body>
+</html>
