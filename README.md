@@ -1,22 +1,23 @@
 # Hamburg Demo Suite — Three Service Tiers, Nine Real Sectors
 
-This project contains **nine complete, client-ready demo websites** built for my web design agency's portfolio — **three demos per service tier** (**Basic**, **Professional**, **Premium**), each targeting a different, commercially relevant sector that is easy to find in Hamburg, Germany. All visible content is in **German** (the target market); all code comments and this README are in English.
+This project contains **nine complete, client-ready demo websites** built for my web design agency's portfolio — **three demos per service tier** (**Starter**, **Professional**, **Premium**), each targeting a different, commercially relevant sector that is easy to find in Hamburg, Germany. All visible content is in **German** (the target market); all code comments and this README are in English.
 
 Every business shown is **fictional**, with invented but plausible Hamburg addresses, phone numbers, and email addresses.
 
 | Folder | Sector | Tier | Fictional business |
 |---|---|---|---|
-| [`/gastro-basic/`](gastro-basic/index.html) | Gastronomy (café & roastery) | **BASIC** | Röstwerk Ottensen GmbH |
-| [`/friseur-basic/`](friseur-basic/index.html) | Hair salon | **BASIC** | Haarwerk Winterhude |
-| [`/tischlerei-basic/`](tischlerei-basic/index.html) | Carpentry / joinery | **BASIC** | Tischlerei Holtkamp |
+| [`/gastro-basic/`](gastro-basic/index.html) | Gastronomy (café & roastery) | **STARTER** | Röstwerk Ottensen GmbH |
+| [`/friseur-basic/`](friseur-basic/index.html) | Hair salon | **STARTER** | Haarwerk Winterhude |
+| [`/tischlerei-basic/`](tischlerei-basic/index.html) | Carpentry / joinery | **STARTER** | Tischlerei Holtkamp |
 | [`/immobilien-professional/`](immobilien-professional/index.html) | Real estate agency | **PROFESSIONAL** | Elbstein Immobilien GmbH |
 | [`/zahnarzt-professional/`](zahnarzt-professional/index.html) | Dental practice | **PROFESSIONAL** | Elbzahn – Praxis für Zahnmedizin |
 | [`/architektur-professional/`](architektur-professional/index.html) | Architecture studio | **PROFESSIONAL** | Fleetwerk Architekten GmbH |
 | [`/maritim-premium/`](maritim-premium/index.html) | Maritime logistics | **PREMIUM** | Nordmeridian Logistik GmbH |
 | [`/windenergie-premium/`](windenergie-premium/index.html) | Offshore wind O&M | **PREMIUM** | Elbwind Offshore GmbH |
 | [`/aviation-premium/`](aviation-premium/index.html) | Aviation supplier & MRO | **PREMIUM** | Hanseatic Aerotec GmbH |
+| [`/ehsos-referenz/`](ehsos-referenz/index.html) | Burger restaurant (Hamburg Lurup) | **REFERENCE** | Ehso's Burger — *a real, shipped client project* |
 
-The root [`index.html`](index.html) hub links to all nine demos **and contains a "Warum der Preisunterschied?" section**: example prices per tier, a cost-driver table, and per-tier explanations a prospect can verify by clicking through the demos.
+The root [`index.html`](index.html) hub is **mobile-first**: it is shown on a phone in front of customers, so it leads with a sticky jump bar, a tab switcher for the three packages (three columns from 900 px up), the maintenance packages, and an interactive combination-discount calculator backed by a static table.
 
 **Stack:** 100 % vanilla HTML/CSS/JS. No frameworks, no build step. External resources: Google Fonts, `picsum.photos` placeholder imagery, and (maritim-premium only) Three.js from the jsDelivr CDN. The two newer Premium heroes use hand-written Canvas 2D — zero dependencies.
 
@@ -26,7 +27,7 @@ The root [`index.html`](index.html) hub links to all nine demos **and contains a
 
 Same package, three different sectors — so a prospect can see that the *tier* defines scope and features, while sector, art direction, and content change per client. The demos are deliberately built so the **price difference is verifiable in the browser**:
 
-| Cost driver | BASIC | PROFESSIONAL | PREMIUM |
+| Cost driver | STARTER | PROFESSIONAL | PREMIUM |
 |---|---|---|---|
 | Pages | 1 (one-pager) | 5 custom pages + sitemap.xml | 5 custom pages + sitemap.xml |
 | Motion | Hover states **only** — deliberately no scroll animation | Scroll reveals, animated counters, staggered timelines, filters | All of Professional **plus a custom-coded immersive hero** (WebGL/Canvas) |
@@ -35,13 +36,44 @@ Same package, three different sectors — so a prospect can see that the *tier* 
 | Copy | Client-supplied | Client-supplied | Professional copywriting included |
 | Support | 2 revision rounds (badge) | Unlimited revisions (badge) | Priority support & launch (badge) |
 
-Every demo carries a fixed corner badge naming its tier and support level. Example prices on the hub (990 € / 2.900 € / 7.500 €) are **placeholders — swap in your own calculation**.
+Every demo carries a fixed corner badge naming its tier and support level. Prices on the hub are **1.000 € / 1.750 € / 2.750 €**, one-off, plus a maintenance plan.
 
 ---
 
-## BASIC tier — one-pagers (3 demos)
+## Pricing model on the hub
 
-Basic sites share one honest constraint set: single `index.html` + `style.css` + ~90-line `script.js` (mobile nav, form validation, footer year). No scroll reveals, no structured data, no OG tags — those are what you pay Professional for. All are responsive, fast (no JS libraries, `display=swap` fonts, lazy images with explicit dimensions), and include a validated contact form with simulated success plus a commented Formspree `action` and commented GA4 snippet.
+**Websites (one-off):** Starter 1.000 € · Professional 1.750 € · Premium 2.750 €
+
+**Maintenance (monthly):** Basic 59 € · Standard 99 € · Premium 149 €
+— a deliberately *different* naming set and colour family (teal, not the warm tier colours), so "maintenance Premium" is never mistaken for "website Premium".
+
+Each tier is cumulative, and every line item carries a plain-German explanation on the card, because the customer is reading it over the seller's shoulder on a phone:
+
+| Tier | Contents |
+|---|---|
+| **Basic 59 €** | Hosting · Domain-Verwaltung · Uptime-Überwachung |
+| **Standard 99 €** | *everything in Basic, plus* monatlicher Bericht per E-Mail · kleine inhaltliche Änderungen |
+| **Premium 149 €** | *everything in Standard, plus* Google-Business-Profil-Pflege · laufende Google-Optimierung |
+
+Deliberately **not** offered, and therefore not written anywhere on the page: backups, SSL certificates, security updates, guaranteed response times, change quotas. An earlier draft promised these; do not reintroduce them without deciding to actually sell them.
+
+**Combination discounts** — taking a maintenance plan discounts the one-off website price:
+
+| Maintenance | Starter 1.000 € | Professional 1.750 € | Premium 2.750 € |
+|---|---|---|---|
+| **Basic — 59 €/mo** | −100 % → 0 € | −50 % → 875 € | −25 % → 2.062,50 € |
+| **Standard — 99 €/mo** | −100 % → 0 € | −100 % → 0 € | −50 % → 1.375 € |
+| **Premium — 149 €/mo** | −100 % → 0 € | −100 % → 0 € | −100 % → 0 € |
+
+Discounts require a **24-month minimum term**. The hub renders these numbers twice: the interactive calculator computes them from the `SITES`/`CARE` arrays in the inline script, and the static table below it is hardcoded — **keep the two in sync when prices change**.
+
+The maintenance cards live in the `.care-grid` block in [`index.html`](index.html); each `<li>` is a `<strong>` name plus a `<span>` explanation.
+
+---
+
+## STARTER tier — one-pagers (3 demos)
+
+Starter sites share one honest constraint set: single `index.html` + `style.css` + ~90-line `script.js` (mobile nav, form validation, footer year). No scroll reveals, no structured data, no OG tags — those are what you pay Professional for. All are responsive, fast (no JS libraries, `display=swap` fonts, lazy images with explicit dimensions), and include a validated contact form with simulated success plus a commented Formspree `action` and commented GA4 snippet.
 
 ### 1. Röstwerk Ottensen — café & roastery
 Warm cream/espresso/terracotta; Fraunces + Karla. Menu with dotted price leaders, rotating "100 % Arabica" hero stamp, Hamburg copy (Franzbrötchen, Zeise-Hallen, harbour beans).
@@ -93,13 +125,34 @@ Deliberately the **light** counterpoint to the two dark Premium demos — Premiu
 
 ---
 
+## REFERENCE — Ehso's Burger (`/ehsos-referenz/`)
+
+The one entry here that is **not** a demo: a real, shipped client site for a burger restaurant in Hamburg Lurup, built *before* the three-tier pricing existed. It does not map onto Starter/Professional/Premium — the hub gives it its own dark band ("Referenz · Individualprojekt", price on request) using the client's own brand colours (`#111` / `#f97316`), so it never reads as a fourth price tier.
+
+React SPA (react-router, react-helmet-async), WebGL hero via `ogl`, GSAP motion, Lenis smooth scrolling, 50+ menu items with allergen codes, three locations with opening-hours logic, ordering via Lieferando/Wolt/Uber Eats, a GDPR cookie banner with Google Consent Mode v2, JSON-LD `Restaurant`, and a `sharp`-based image pipeline.
+
+**How the folder was produced.** The client repo lives outside this project and was **not modified**. Its `ehsosburger.de` domain no longer resolves and its `main` branch was replaced by a holding page, so the folder is a static build made in a scratch copy:
+
+1. Restore the real app: `git show fad8938:src/App.jsx > src/App.jsx`
+2. `BrowserRouter` → `HashRouter` in `src/main.jsx`, so the site needs no server rewrite rules and runs from any subfolder.
+3. `base: './'` in `vite.config.js`; the six hard `href="/…"` internal links become `href="#/…"`.
+4. `noindex = true` as the default in `src/components/SEO.jsx`.
+5. `npx vite build` (skips `optimize-images`, whose output is already in `public/`; `copy-routes.js` is moot under hash routing).
+6. Post-build, rewrite the ~67 absolute public-asset paths in `dist/assets/*.js` — `"/images/` → `"images/` and the same for `menu-images`, `videos`. The replacement is anchored on the quote so absolute `https://ehsosburger.de/images/…` URLs inside the JSON-LD survive.
+7. Strip the two gtag.js blocks from `dist/index.html`. A portfolio copy must not write hits into the client's GA4 property; `CookieBanner` guards on `typeof window.gtag === 'function'`, so it still behaves.
+8. Drop `_redirects`, `robots.txt` and `sitemap.xml` — meaningless for a hash-routed folder copy.
+
+Two menu images (`Paratha Burger`, `Crepe mit Nutella`) were referenced as `.jpeg` while only `.webp` was ever shipped — a pre-existing 404 on the live site, corrected in this copy.
+
+---
+
 ## Design-system separation (no two demos look alike)
 
 | Demo | Display font | Body font | Signature colours |
 |---|---|---|---|
-| Röstwerk (Basic) | Fraunces | Karla | cream / espresso / terracotta |
-| Haarwerk (Basic) | DM Serif Display | Nunito Sans | blush / plum / rosewood |
-| Holtkamp (Basic) | Bitter | Work Sans | pine / walnut / forest green |
+| Röstwerk (Starter) | Fraunces | Karla | cream / espresso / terracotta |
+| Haarwerk (Starter) | DM Serif Display | Nunito Sans | blush / plum / rosewood |
+| Holtkamp (Starter) | Bitter | Work Sans | pine / walnut / forest green |
 | Elbstein (Pro) | Cormorant Garamond | Jost | sand / navy / brass |
 | Elbzahn (Pro) | Sora | Mulish | mint-white / teal-slate / teal |
 | Fleetwerk (Pro) | Syne | Manrope | warm gray / near-black / oxide red |
@@ -115,7 +168,7 @@ Every site is verified for small screens (fluid grids collapse to one column, ta
 
 | Demo | Mobile menu concept | Entry/loading animation | Signature element |
 |---|---|---|---|
-| Röstwerk | "Tageskarte": serif entries with dotted price leaders, hours as card footer | Hero settles in (no loader — Basic sells speed) | Rotating Arabica stamp |
+| Röstwerk | "Tageskarte": serif entries with dotted price leaders, hours as card footer | Hero settles in (no loader — Starter sells speed) | Rotating Arabica stamp |
 | Haarwerk | Boudoir drawer from the right, numbered serif entries, blurred scrim | Hero settle + stamp pop | Service marquee strip (✂-separated) |
 | Holtkamp | Tool-cabinet drawer from the left, walnut dark, ruler-tick edge | Hero settle | Sawtooth divider on tinted sections |
 | Elbstein | "Exposé" overlay: brass brochure frame, oversized italic serif | Navy loader: wordmark + brass rule | Ken Burns hero (existing) |
@@ -125,7 +178,7 @@ Every site is verified for small screens (fluid grids collapse to one column, ta
 | Elbwind | "Leitwarte": wind-streak dark panel, W1–W4 waypoint codes, 24/7 line | Rotor spin-up loader | Live cycling wind readout in the hero |
 | Aerotec | "Boarding": blueprint grid, GATE-01…04 rows, AOG footer | Plane crosses a dashed runway | Mono spec ticker under the metrics |
 
-Loaders are **pure CSS** (auto-dismiss ~1.2 s, `pointer-events: none`, `display: none` under `prefers-reduced-motion`) and exist only on Professional/Premium home pages — Basic deliberately has none, because instant load is that tier's selling point.
+Loaders are **pure CSS** (auto-dismiss ~1.2 s, `pointer-events: none`, `display: none` under `prefers-reduced-motion`) and exist only on Professional/Premium home pages — Starter deliberately has none, because instant load is that tier's selling point.
 
 ---
 
@@ -137,10 +190,16 @@ No build step, no dependencies to install:
 2. Or open the root `index.html` for the hub with all nine demos and the pricing rationale.
 3. Internet needed once for Google Fonts and `picsum.photos` images; maritim-premium additionally loads Three.js from jsDelivr. The Elbwind and Aerotec heroes are dependency-free Canvas 2D.
 
+To check the hub the way a customer will see it, serve the folder rather than opening `file://`, then load it on the phone over the LAN:
+
+```
+python3 -m http.server 8080
+```
+
 **Wiring the forms later:** each form tag has a commented-out `action="https://formspree.io/f/your-id" method="POST"` — uncomment, insert your Formspree ID, and remove the `e.preventDefault()` line noted in each script.
 
 **Analytics:** each `<head>` contains a commented gtag.js block — uncomment and insert your GA4 Measurement ID.
 
-**Prices:** the hub's example prices (990 / 2.900 / 7.500 €) are placeholders — adjust to your own calculation before showing clients.
+**Prices:** see "Pricing model on the hub" above. Changing a price means editing **two** places in `index.html`: the tier panel / maintenance card markup, and the `SITES`/`CARE` arrays in the inline script that feed the discount calculator.
 
 **Performance:** all sites avoid blocking resources (deferred scripts, `display=swap` fonts, lazy images with explicit dimensions, compositor-only animations) and are built to score ≥ 90 in Lighthouse Performance. Note that `picsum.photos` adds real network latency — swap in optimized local images before running formal audits or going live.

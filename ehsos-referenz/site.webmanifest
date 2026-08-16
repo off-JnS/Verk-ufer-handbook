@@ -1,0 +1,23 @@
+{
+  "name": "Ehso's Burger",
+  "short_name": "Ehso's Burger",
+  "description": "Frische, handgemachte Burger zum Mitnehmen und Liefern in Hamburg Lurup.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141414",
+  "theme_color": "#f97316",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/images/Logo/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}
