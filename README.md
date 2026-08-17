@@ -61,11 +61,15 @@ Deliberately **not** offered, and therefore not written anywhere on the page: ba
 
 | Maintenance | Starter 1.000 € | Professional 1.750 € | Premium 2.750 € |
 |---|---|---|---|
-| **Basic — 59 €/mo** | −100 % → 0 € | −50 % → 875 € | −25 % → 2.062,50 € |
-| **Standard — 99 €/mo** | −100 % → 0 € | −100 % → 0 € | −50 % → 1.375 € |
+| **Basic — 59 €/mo** | −100 % → 0 € | −50 % → 750 € | −25 % → 2.000 € |
+| **Standard — 99 €/mo** | −100 % → 0 € | −100 % → 0 € | −50 % → 1.250 € |
 | **Premium — 149 €/mo** | −100 % → 0 € | −100 % → 0 € | −100 % → 0 € |
 
-Discounts require a **24-month minimum term**. The hub renders these numbers twice: the interactive calculator computes them from the `SITES`/`CARE` arrays in the inline script, and the static table below it is hardcoded — **keep the two in sync when prices change**.
+Discounts require a **24-month minimum term**.
+
+Prices are rounded **down** to the next multiple of 250 € (`STEP` / `offerPrice()` in the inline script), so the customer always pays a round figure. The badge keeps showing the *advertised* percentage while the actual discount is a little larger — −50 % on Professional bills at 750 €, i.e. −57 %. Rounding only ever moves in the customer's favour, and the fine print under the table says so.
+
+The hub renders these numbers twice: the calculator computes them from the `SITES`/`CARE` arrays, and the static table below it is hardcoded — **keep the two in sync when prices change**. `check-discounts.mjs` (scratchpad) drives all three chips and asserts they agree.
 
 The maintenance cards live in the `.care-grid` block in [`index.html`](index.html); each `<li>` is a `<strong>` name plus a `<span>` explanation.
 

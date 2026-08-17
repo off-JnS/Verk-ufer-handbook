@@ -1122,14 +1122,14 @@
               <tr>
                 <th scope="row">Basic <small>59 €/Monat</small></th>
                 <td class="free"><span class="off">−100 %</span><b>0&nbsp;€</b></td>
-                <td><span class="off">−50 %</span><b>875&nbsp;€</b></td>
-                <td><span class="off">−25 %</span><b>2.062,50&nbsp;€</b></td>
+                <td><span class="off">−50 %</span><b>750&nbsp;€</b></td>
+                <td><span class="off">−25 %</span><b>2.000&nbsp;€</b></td>
               </tr>
               <tr>
                 <th scope="row">Standard <small>99 €/Monat</small></th>
                 <td class="free"><span class="off">−100 %</span><b>0&nbsp;€</b></td>
                 <td class="free"><span class="off">−100 %</span><b>0&nbsp;€</b></td>
-                <td><span class="off">−50 %</span><b>1.375&nbsp;€</b></td>
+                <td><span class="off">−50 %</span><b>1.250&nbsp;€</b></td>
               </tr>
               <tr>
                 <th scope="row">Premium <small>149 €/Monat</small></th>
@@ -1143,7 +1143,8 @@
         <p class="scroll-hint">Tabelle seitlich wischen →</p>
         <p class="fineprint">
           Rabatt gilt bei 24 Monaten Mindestlaufzeit des Wartungsvertrags.
-          Danach monatlich kündbar. Alle Preise zzgl. USt.
+          Danach monatlich kündbar. Endpreise auf volle 250&nbsp;€ abgerundet –
+          zu Ihren Gunsten. Alle Preise zzgl. USt.
         </p>
       </div>
     </section>
@@ -1377,17 +1378,19 @@
         { name: 'Premium', monthly: 149, off: [100, 100, 100] }
       ];
 
-      /* Whole amounts read "875 €", amounts with cents "2.062,50 €" —
-         never the half-formatted "2.062,5 €". */
-      function fmt(digits) {
-        return new Intl.NumberFormat('de-DE', {
-          style: 'currency', currency: 'EUR',
-          minimumFractionDigits: digits, maximumFractionDigits: digits
-        });
-      }
-      var euroWhole = fmt(0);
-      var euroCents = fmt(2);
-      function euro(v) { return (Number.isInteger(v) ? euroWhole : euroCents).format(v); }
+      var STEP = 250;
+
+      /* Discounted prices are rounded DOWN to the next multiple of STEP, so the
+         customer always pays a round figure and never more than the advertised
+         percentage implies. The badge keeps showing the advertised percentage —
+         −25 % on 2.750 € is 2.062,50 €, and we charge 2.000 €. */
+      function offerPrice(price, off) { return Math.floor(price * (100 - off) / 100 / STEP) * STEP; }
+
+      var euroFmt = new Intl.NumberFormat('de-DE', {
+        style: 'currency', currency: 'EUR',
+        minimumFractionDigits: 0, maximumFractionDigits: 0
+      });
+      function euro(v) { return euroFmt.format(v); }
 
       var rowsEl = document.getElementById('calc-rows');
       var savingEl = document.getElementById('calc-saving');
@@ -1399,7 +1402,7 @@
 
         rowsEl.innerHTML = SITES.map(function (site, i) {
           var off = care.off[i];
-          var now = site.price * (100 - off) / 100;
+          var now = offerPrice(site.price, off);
           bestSaving = Math.max(bestSaving, site.price - now);
           return '<div class="calc__row' + (off === 100 ? ' is-free' : '') + '">' +
                    '<div>' +
