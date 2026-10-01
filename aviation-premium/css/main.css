@@ -21,6 +21,22 @@
   --font-mono: "Space Mono", ui-monospace, monospace;
 
   --container: 1160px;
+
+  /* Premium motion layer (css/fx.css) */
+  --fx-accent: var(--clr-orange);
+  --fx-accent-2: var(--clr-blue);
+  --fx-bg: var(--clr-paper);
+  --fx-surface: #FFFFFF;
+  --fx-text: var(--clr-ink);
+  --fx-muted: var(--clr-fog);
+  --fx-line: var(--clr-line);
+  --fx-display: var(--font-display);
+  --fx-mono: var(--font-mono);
+  --fx-radius: 4px;
+  --fx-container: var(--container);
+  --fx-header-h: 4.6rem;
+  --fx-glare: rgba(255, 255, 255, 0.55);
+  --fx-spot: rgba(27, 79, 138, 0.09);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1290,3 +1306,32 @@ h1 em, h2 em { color: var(--clr-orange); font-style: normal; }
   .dataplate { padding-inline: 1.2rem; }
   .dataplate__grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ---------- Premium motion showcases (behaviour: js/fx.js, layout: css/fx.css) ---------- */
+
+/* Part story: a galley bracket from drawing to first article */
+.partstory__ghost { fill: none; stroke: rgba(27, 79, 138, 0.35); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.partstory__solid { fill: rgba(27, 79, 138, 0.12); stroke: none; }
+.partstory__path { fill: none; stroke: var(--clr-blue); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.partstory__dims path { fill: none; stroke: var(--clr-fog); stroke-width: 1; }
+.partstory__dims text, .partstory__cmm text { font-family: var(--font-mono); font-size: 12px; fill: var(--clr-ink); }
+.partstory__holes circle { fill: var(--clr-paper); stroke: var(--clr-blue); stroke-width: 1.6; }
+.partstory__cmm path { fill: none; stroke: var(--clr-orange); stroke-width: 1.8; }
+.partstory__stamp rect { fill: rgba(232, 97, 28, 0.06); stroke: var(--clr-orange); stroke-width: 2.5; }
+.partstory__stamp text { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.12em; text-anchor: middle; fill: var(--clr-orange); }
+.partstory__stamp .partstory__ok { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: 0.08em; }
+.partstory__stamp { transform-box: fill-box; transform-origin: center; }
+.partstory__stamp.is-on { animation: stamp-hit 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+@keyframes stamp-hit { from { opacity: 0; transform: rotate(-8deg) scale(1.6); } to { opacity: 1; transform: rotate(-8deg) scale(1); } }
+.partstory__halo { fill: rgba(232, 97, 28, 0.18); }
+.partstory__tool { fill: var(--clr-orange); stroke: #fff; stroke-width: 2; }
+.partstory__cross { stroke: var(--clr-orange); stroke-width: 1.2; }
+.partstory[data-active="5"] [data-fx-story-marker] { opacity: 0; transition: opacity 0.4s; }
+
+/* Process timeline (leistungen.html): numbers light up as the fill passes */
+.timeline__num { position: relative; z-index: 2; transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease; }
+.timeline__step.is-passed .timeline__num { background: var(--clr-blue); color: #fff; border-color: var(--clr-blue); }
+
+/* Hero: the pointer is a measuring crosshair */
+.hero { touch-action: pan-y; }
+@media (prefers-reduced-motion: reduce) { .partstory__stamp.is-on { animation: none; } }

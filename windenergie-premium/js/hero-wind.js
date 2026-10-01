@@ -7,6 +7,8 @@
      - pauses when tab hidden or hero scrolled out of view
      - prefers-reduced-motion renders a single static frame
      - no canvas support → CSS storm gradient fallback simply remains
+   Interaction: the pointer (or a finger) is a gust source — streaks bend
+   away from it and swirl around it; a tap fires a stronger blast.
    ========================================================================== */
 
 (function () {
@@ -25,6 +27,10 @@
   var running = false;
   var rafId = null;
   var t = 0;
+
+  /* Gust source under the pointer: position + strength that decays */
+  var gust = { x: -9999, y: -9999, s: 0 };
+  var GUST_R = 170;
 
   /* ---------- Flow field: layered sines approximate gusty wind ---------- */
   function flowAngle(x, y, time) {
@@ -77,15 +83,30 @@
     for (var i = 0; i < particles.length; i++) {
       var p = particles[i];
       var a = flowAngle(p.x, p.y, t);
-      var gust = 1 + 0.4 * Math.sin(t * 0.0006 + p.y * 0.01);
-      var vx = Math.cos(a) * p.speed * gust + 1.1; // constant west→east drift
-      var vy = Math.sin(a) * p.speed * gust * 0.6;
+      var breeze = 1 + 0.4 * Math.sin(t * 0.0006 + p.y * 0.01);
+      var vx = Math.cos(a) * p.speed * breeze + 1.1; // constant west→east drift
+      var vy = Math.sin(a) * p.speed * breeze * 0.6;
+      var glow = 0;
+
+      if (gust.s > 0.02) {
+        var dx = p.x - gust.x, dy = p.y - gust.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 < GUST_R * GUST_R) {
+          var d = Math.sqrt(d2) || 1;
+          var f = (1 - d / GUST_R) * gust.s;
+          vx += (dx / d) * f * 7 - (dy / d) * f * 4;   // push out + swirl
+          vy += (dy / d) * f * 7 + (dx / d) * f * 4;
+          glow = f;
+        }
+      }
 
       var nx = p.x + vx;
       var ny = p.y + vy;
 
-      ctx.strokeStyle = "rgba(" + p.hue + ", " + (0.28 * Math.min(1, p.age / 40)) + ")";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = glow > 0.05
+        ? "rgba(245, 197, 24, " + Math.min(0.9, 0.3 + glow) + ")"
+        : "rgba(" + p.hue + ", " + (0.28 * Math.min(1, p.age / 40)) + ")";
+      ctx.lineWidth = 1 + glow * 1.5;
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
       ctx.lineTo(nx, ny);
@@ -99,6 +120,16 @@
         particles[i] = makeParticle(false);
       }
     }
+
+    // ring marking the gust source
+    if (gust.s > 0.05) {
+      ctx.strokeStyle = "rgba(245, 197, 24, " + (gust.s * 0.35) + ")";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(gust.x, gust.y, 18 + (1 - gust.s) * 60, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    gust.s *= 0.965;
 
     rafId = requestAnimationFrame(step);
   }
@@ -141,6 +172,17 @@
     staticFrame();
     return;
   }
+
+  /* Pointer / finger as gust source */
+  var heroEl = document.querySelector("[data-hero]") || canvas.parentElement;
+  function gustAt(e, strength) {
+    var r = canvas.getBoundingClientRect();
+    gust.x = e.clientX - r.left;
+    gust.y = e.clientY - r.top;
+    gust.s = Math.max(gust.s, strength);
+  }
+  heroEl.addEventListener("pointermove", function (e) { gustAt(e, 0.8); }, { passive: true });
+  heroEl.addEventListener("pointerdown", function (e) { gustAt(e, 1.6); }, { passive: true });
 
   /* Pause when the tab is hidden */
   document.addEventListener("visibilitychange", function () {

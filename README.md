@@ -17,7 +17,9 @@ Every business shown is **fictional**, with invented but plausible Hamburg addre
 | [`/aviation-premium/`](aviation-premium/index.html) | Aviation supplier & MRO | **PREMIUM** | Hanseatic Aerotec GmbH |
 | [`/ehsos-referenz/`](ehsos-referenz/index.html) | Burger restaurant (Hamburg Lurup) | **REFERENCE** | Ehso's Burger — *a real, shipped client project* |
 
-The root [`index.html`](index.html) hub is **mobile-first**: it is shown on a phone in front of customers, so it leads with a sticky jump bar, a tab switcher for the three packages (three columns from 900 px up), the maintenance packages, and an interactive combination-discount calculator backed by a static table.
+The root [`index.html`](index.html) hub is the **client-facing showcase**, built for a phone or an iPad mini held in front of a prospect. It opens with a screenshot gallery of all nine demos (filterable by tier) and the Ehso's reference; tapping any of them opens a **full-screen in-page viewer** with prev/next arrows and a close button, so the client never leaves the hub. The viewer pushes a single `#demo=<slug>` history entry, so the browser back button and the iPad edge swipe close it; `index.html#demo=maritim-premium` deep-links straight into a demo. Below that: the three packages (tabs under 900 px, three columns above), a decision helper, a package comparison (stacked per criterion on phones), the maintenance plans and the combination-discount calculator backed by a static table. Phones get a fixed bottom tab bar; from 744 px (iPad mini portrait) a sticky top bar with section links replaces it. The hub can be added to the home screen (`site.webmanifest`, `assets/icon-180.png`) and then opens without browser chrome.
+
+**Thumbnails.** The gallery images in `assets/thumbs/` are real screenshots (desktop 1280×800 and phone 390×844) encoded as WebP, ~480 KB in total. After changing a demo, regenerate them with `npx -y -p playwright node tools/capture-thumbs.mjs` (uses the locally installed Google Chrome).
 
 **Stack:** 100 % vanilla HTML/CSS/JS. No frameworks, no build step. External resources: Google Fonts, `picsum.photos` placeholder imagery, and (maritim-premium only) Three.js from the jsDelivr CDN. The two newer Premium heroes use hand-written Canvas 2D — zero dependencies.
 
@@ -69,7 +71,7 @@ Discounts require a **24-month minimum term**.
 
 Prices are rounded **down** to the next multiple of 250 € (`STEP` / `offerPrice()` in the inline script), so the customer always pays a round figure. The badge keeps showing the *advertised* percentage while the actual discount is a little larger — −50 % on Professional bills at 750 €, i.e. −57 %. Rounding only ever moves in the customer's favour, and the fine print under the table says so.
 
-The hub renders these numbers twice: the calculator computes them from the `SITES`/`CARE` arrays, and the static table below it is hardcoded — **keep the two in sync when prices change**. `check-discounts.mjs` (scratchpad) drives all three chips and asserts they agree.
+The hub renders these numbers twice: the calculator computes them from the `SITES`/`CARE` arrays, and the static table below it is hardcoded — **keep the two in sync when prices change**.
 
 The maintenance cards live in the `.care-grid` block in [`index.html`](index.html); each `<li>` is a `<strong>` name plus a `<span>` explanation.
 
@@ -77,10 +79,10 @@ The maintenance cards live in the `.care-grid` block in [`index.html`](index.htm
 
 ## STARTER tier — one-pagers (3 demos)
 
-Starter sites share one honest constraint set: single `index.html` + `style.css` + ~90-line `script.js` (mobile nav, form validation, footer year). No scroll reveals, no structured data, no OG tags — those are what you pay Professional for. All are responsive, fast (no JS libraries, `display=swap` fonts, lazy images with explicit dimensions), and include a validated contact form with simulated success plus a commented Formspree `action` and commented GA4 snippet.
+Starter sites share one honest constraint set: single `index.html` + `style.css` + ~90-line `script.js` (mobile nav, form validation, footer year). No scroll reveals, no structured data, no OG tags — those are what you pay Professional for. Motion is deliberately limited to hover states: the mobile menu is a plain dropdown under the sticky header (no drawer, overlay or staggered entries), the hero renders instantly without an entry animation, and there are no decorative extras like stamps, marquees or sawtooth dividers. The sites still look finished — typography, palette and imagery carry them — so the step up to Professional is visible without Starter looking cheap. All are responsive, fast (no JS libraries, `display=swap` fonts, lazy images with explicit dimensions), and include a validated contact form with simulated success plus a commented Formspree `action` and commented GA4 snippet.
 
 ### 1. Röstwerk Ottensen — café & roastery
-Warm cream/espresso/terracotta; Fraunces + Karla. Menu with dotted price leaders, rotating "100 % Arabica" hero stamp, Hamburg copy (Franzbrötchen, Zeise-Hallen, harbour beans).
+Warm cream/espresso/terracotta; Fraunces + Karla. Menu with dotted price leaders, Hamburg copy (Franzbrötchen, Zeise-Hallen, harbour beans).
 *Contact:* Bahrenfelder Straße 87, 22765 Hamburg · +49 40 555 123 40 · hallo@roestwerk-ottensen.de
 
 ### 2. Haarwerk Winterhude — hair salon
@@ -114,6 +116,21 @@ Editorial look: oversized Syne headlines, warm-gray paper, oxide red, deliberate
 ## PREMIUM tier — 5-page sites with custom immersive experiences (3 demos)
 
 Premium sites include everything in Professional **plus**: a custom-coded immersive hero (each one different tech, to show range), a complete bespoke design system with monospace coordinate/spec-label language, professional German copywriting (founder statements, benefit-led services, concrete CTAs), a Premium package card with 24/7 hotline on the contact page, and the "Priority Support & Launch" badge. Crucially, the three Premium demos also use **three structurally different page layouts** — Nordmeridian's classic vertical dark dramaturgy, Elbwind's control-room split (telemetry panel in the hero, numbered operation rows, hazard-stripe dividers, inverted yellow CTA), and Aerotec's engineering-document system (drawing title-block hero, riveted data plate, bento grid, annotated figures) — because "Premium" must visibly mean *no off-the-shelf grid*. All three heroes are performance-defensive: pixel-ratio capped at 2, **pause when the tab is hidden or the hero scrolls out of view**, `prefers-reduced-motion` renders a static frame, and a pure-CSS fallback remains if WebGL/canvas is unavailable.
+
+**Interactive heroes.** Each hero answers to the pointer *and* to touch: Nordmeridian's globe can be dragged to spin (with inertia; vertical scrolling stays native via `touch-action: pan-y`), gets an additive atmosphere halo and pulls back as you scroll; Elbwind's wind field treats the pointer or a fingertip as a gust source that bends and lights up the streaks (a tap fires a blast); Aerotec's blueprint turns the pointer into a measuring crosshair with coordinates, a dimension line to XFW and an object snap to route destinations (a tap pins it for a moment).
+
+**Motion layer (`css/fx.css` + `js/fx.js`).** One hand-written module, byte-identical in all three Premium folders, themed through `--fx-*` tokens in each site's `:root`. No libraries. It adds:
+
+- **Page transitions** — cross-document View Transitions (`@view-transition`): the header and tier badge stay put while the new page wipes up from below; browsers without support get a short fade-out. Repeat visits to a home page in one session skip the loader (inline `sessionStorage` flag in `<head>`).
+- **Headlines** — every `h1`/`h2` in `main` is split into words that rise out of a mask on reveal; mono kickers decode with a short text scramble.
+- **Images** — content photos wipe open with a `clip-path` mask; hero copy drifts and fades as it scrolls out (`data-fx-hero`).
+- **Pointer effects** (mouse/trackpad only, never touch) — magnetic buttons, 3D tilt with glare on cards, a trailing cursor ring (blend-mode difference, labels like "Drehen" or "Messen" over the heroes) and a spotlight glow on `.fx-spot` panels.
+- **Velocity marquees** — port and spec tickers speed up, reverse and skew with the scroll velocity (`data-fx-marquee`).
+- **Horizontal showcase** (`data-fx-hs`) — a pinned section whose card track slides sideways while you scroll down: Nordmeridian's six trade lanes, Elbwind's fleet & equipment, Aerotec's shop-floor tour. Without JS or with reduced motion it is a normal swipeable row.
+- **Scroll story** (`data-fx-story`) — a sticky visual (on phones: pinned above the text) driven by five steps: a shipment Hamburg → Shanghai whose route draws itself and whose ship stops at each port; a drone inspecting a rotor blade until the rotor spins again; a galley bracket going from drawing through machining and CMM measurement to a stamped first-article approval. Stops are found automatically from `[data-fx-stop]` points on the path.
+- **SVG drawing and timelines** — route maps on Netzwerk/Windparks draw themselves (`data-fx-draw`), history and process lists fill a progress line and light up passed entries (`data-fx-timeline`).
+
+Everything is progressive enhancement: with `prefers-reduced-motion` nothing splits, wipes, tilts or pins, and the pages read completely without JS.
 
 ### 1. Nordmeridian Logistik — maritime logistics · **Three.js WebGL globe**
 Dark maritime system: ink `#05090F`, signal orange, sonar cyan; Space Grotesk + Inter + mono labels. 1,500-dot particle globe, pulsing Hamburg hub, eight great-circle arcs with travelling cargo pulses, departure-board route table, inline-SVG world map on the Netzwerk page.
@@ -168,13 +185,13 @@ Two menu images (`Paratha Burger`, `Crepe mit Nutella`) were referenced as `.jpe
 
 ## Mobile experience & signature details
 
-Every site is verified for small screens (fluid grids collapse to one column, tables scroll inside their own container, headers drop their `backdrop-filter` on mobile so the fixed-position menus are never trapped in the header's containing block). **No two mobile menus are alike** — each one is designed in the site's own language, with staggered link animation, ESC-to-close, scroll-lock, and a contextual footer (hours/phone/coordinates, injected by each site's script):
+Every site is verified for small screens (fluid grids collapse to one column, tables scroll inside their own container, headers drop their `backdrop-filter` on mobile so the fixed-position menus are never trapped in the header's containing block). From Professional upwards **no two mobile menus are alike** — each one is designed in the site's own language, with staggered link animation, ESC-to-close, scroll-lock, and a contextual footer (hours/phone/coordinates, injected by each site's script):
 
 | Demo | Mobile menu concept | Entry/loading animation | Signature element |
 |---|---|---|---|
-| Röstwerk | "Tageskarte": serif entries with dotted price leaders, hours as card footer | Hero settles in (no loader — Starter sells speed) | Rotating Arabica stamp |
-| Haarwerk | Boudoir drawer from the right, numbered serif entries, blurred scrim | Hero settle + stamp pop | Service marquee strip (✂-separated) |
-| Holtkamp | Tool-cabinet drawer from the left, walnut dark, ruler-tick edge | Hero settle | Sawtooth divider on tinted sections |
+| Röstwerk | Plain dropdown (Starter) | none — instant render | — |
+| Haarwerk | Plain dropdown (Starter) | none — instant render | — |
+| Holtkamp | Plain dropdown (Starter) | none — instant render | — |
 | Elbstein | "Exposé" overlay: brass brochure frame, oversized italic serif | Navy loader: wordmark + brass rule | Ken Burns hero (existing) |
 | Elbzahn | App-style bottom sheet with grab handle and full-width CTA | Mint loader: tooth pulse | Sticky "Akut?"-call pill (mobile) |
 | Fleetwerk | "Werkverzeichnis": full-screen numbered index on plan-grid paper | Oxide wipe reveals wordmark | Outline wordmark marquee |
@@ -204,6 +221,6 @@ python3 -m http.server 8080
 
 **Analytics:** each `<head>` contains a commented gtag.js block — uncomment and insert your GA4 Measurement ID.
 
-**Prices:** see "Pricing model on the hub" above. Changing a price means editing **two** places in `index.html`: the tier panel / maintenance card markup, and the `SITES`/`CARE` arrays in the inline script that feed the discount calculator.
+**Prices:** see "Pricing model on the hub" above. Changing a price means editing several places in `index.html`: the gallery card badges, the tier panel / maintenance card markup, the comparison and discount table headers, the static discount table, and the `SITES`/`CARE` arrays in the inline script that feed the discount calculator.
 
 **Performance:** all sites avoid blocking resources (deferred scripts, `display=swap` fonts, lazy images with explicit dimensions, compositor-only animations) and are built to score ≥ 90 in Lighthouse Performance. Note that `picsum.photos` adds real network latency — swap in optimized local images before running formal audits or going live.

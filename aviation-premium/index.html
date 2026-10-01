@@ -58,7 +58,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Albert+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/fx.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F7F9FB'/%3E%3Cpath d='M4 20l24-9-6 9 6 2-24 4 8-6z' fill='%231B4F8A'/%3E%3Ccircle cx='26' cy='7' r='3' fill='%23E8611C'/%3E%3C/svg%3E">
+  <!-- Repeat visits in this session skip the loader (see css/fx.css) -->
+  <script>try{if(sessionStorage.getItem("fx-seen"))document.documentElement.classList.add("fx-skip-loader");sessionStorage.setItem("fx-seen","1")}catch(e){}</script>
 </head>
 <body>
 
@@ -107,13 +110,13 @@
     <!-- ===== Immersive hero: blueprint flight-route canvas (Premium experience) ===== -->
     <section class="hero" data-hero>
       <!-- Canvas mounts here; CSS blueprint grid serves as no-canvas fallback -->
-      <canvas id="flight-canvas" class="hero__canvas" aria-hidden="true"></canvas>
+      <canvas id="flight-canvas" class="hero__canvas" aria-hidden="true" data-fx-cursor="Messen"></canvas>
 
-      <div class="container hero__content">
+      <div class="container hero__content" data-fx-hero>
         <!-- Title block, set like the corner stamp of a technical drawing -->
         <div class="titleblock reveal">
           <p class="titleblock__coords mono">53,5320° N · 9,8355° O — Hamburg-Finkenwerder · XFW</p>
-          <h1>Präzision ist kein Versprechen.<br><em>Sie ist ein Toleranzfeld.</em></h1>
+          <h1 data-fx-delay="1.4">Präzision ist kein Versprechen.<br><em>Sie ist ein Toleranzfeld.</em></h1>
           <p class="hero__sub">
             Hanseatic Aerotec fertigt, rüstet aus und hält instand – Kabinen, Komponenten
             und Baugruppen für die zivile Luftfahrt. Seit 2001, in Sichtweite des Werks,
@@ -138,7 +141,7 @@
     <!-- ===== Data plate (riveted type plate instead of a dark stats band) ===== -->
     <section class="section section--flush" aria-label="Hanseatic Aerotec in Zahlen">
       <div class="container">
-        <div class="dataplate reveal">
+        <div class="dataplate fx-spot reveal">
           <span class="dataplate__rivet dataplate__rivet--tl" aria-hidden="true"></span>
           <span class="dataplate__rivet dataplate__rivet--tr" aria-hidden="true"></span>
           <span class="dataplate__rivet dataplate__rivet--bl" aria-hidden="true"></span>
@@ -168,7 +171,7 @@
 
     <!-- ===== Spec ticker (decorative) ===== -->
     <div class="spec-ticker" aria-hidden="true">
-      <div class="spec-ticker__track">
+      <div class="spec-ticker__track" data-fx-marquee="40">
         <span>AL 7075-T6</span><span>TOLERANZ ±0,05 MM</span><span>EN 9100:2018</span><span>AUTOKLAV 180 °C</span><span>CATIA V5</span><span>FAI NACH EN 9102</span><span>OTD 98,7 %</span>
         <span>AL 7075-T6</span><span>TOLERANZ ±0,05 MM</span><span>EN 9100:2018</span><span>AUTOKLAV 180 °C</span><span>CATIA V5</span><span>FAI NACH EN 9102</span><span>OTD 98,7 %</span>
       </div>
@@ -210,6 +213,107 @@
             <span class="bento__spec mono" aria-hidden="true">CATIA V5 · EN 9102 · EASA-Nachweisführung</span>
             <span class="bento__link mono">Mehr →</span>
           </a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== Drawing to first article, scroll-driven (js/fx.js · data-fx-story) ===== -->
+    <section class="section fx-story partstory" data-fx-story aria-label="Von der Zeichnung zum Erstmuster in fünf Schritten">
+      <div class="container">
+        <div class="fx-story__intro">
+          <p class="kicker mono">// Ein Bauteil</p>
+          <h2>Von der Zeichnung<br><em>zum freigegebenen Erstmuster.</em></h2>
+        </div>
+        <div class="fx-story__grid">
+          <div class="fx-story__visual" aria-hidden="true">
+            <div class="fx-story__bar"><span>Zeichn.-Nr. HA-BRK-0427 · Halter Galley</span><b data-fx-story-readout="state">In Konstruktion</b></div>
+            <svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <pattern id="part-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M20 0H0V20" fill="none" stroke="rgba(27,79,138,0.08)" stroke-width="1"/>
+                </pattern>
+              </defs>
+              <rect width="600" height="400" fill="url(#part-grid)"/>
+              <!-- finished part fill (last step) -->
+              <path class="partstory__solid" data-on="5" d="M120 340 L480 340 L480 300 L190 300 Q170 300 170 280 L170 90 Q170 80 160 80 L130 80 Q120 80 120 90 Z"/>
+              <!-- construction outline (always visible, thin) -->
+              <path class="partstory__ghost" d="M120 340 L480 340 L480 300 L190 300 Q170 300 170 280 L170 90 Q170 80 160 80 L130 80 Q120 80 120 90 Z"/>
+              <!-- dimensions -->
+              <g class="partstory__dims" data-on="1">
+                <path d="M120 352 V376 M480 352 V376 M120 368 H480"/>
+                <path d="M108 80 H84 M108 340 H84 M92 80 V340"/>
+                <text x="268" y="390">360,00 ±0,05</text>
+                <text x="40" y="214">260,00</text>
+              </g>
+              <!-- lightening holes, drilled during machining -->
+              <g class="partstory__holes" data-on="2">
+                <circle cx="240" cy="320" r="8"/><circle cx="320" cy="320" r="8"/><circle cx="400" cy="320" r="8"/>
+                <circle cx="145" cy="150" r="7"/><circle cx="145" cy="220" r="7"/>
+              </g>
+              <!-- CMM measuring points -->
+              <g class="partstory__cmm" data-on="3">
+                <path d="M474 334 l12 12 m0 -12 l-12 12 M164 114 l12 12 m0 -12 l-12 12 M234 294 l12 12 m0 -12 l-12 12"/>
+                <text x="492" y="352">+0,012</text>
+                <text x="182" y="114">−0,008</text>
+                <text x="250" y="292">+0,004</text>
+              </g>
+              <!-- first article stamp -->
+              <g class="partstory__stamp" data-on="4" transform="rotate(-8 430 170)">
+                <rect x="350" y="130" width="160" height="78" rx="4"/>
+                <text x="430" y="162">FAI · EN 9102</text>
+                <text x="430" y="190" class="partstory__ok">BESTANDEN</text>
+              </g>
+              <!-- tool path the cutter follows -->
+              <path class="partstory__path" data-fx-story-path d="M120 340 L480 340 L480 300 L190 300 Q170 300 170 280 L170 90 Q170 80 160 80 L130 80 Q120 80 120 90 L120 332"/>
+              <g class="partstory__stops">
+                <g data-on="1"><circle cx="120" cy="340" r="0" data-fx-stop/></g>
+                <g data-on="2"><circle cx="480" cy="300" r="0" data-fx-stop/></g>
+                <g data-on="3"><circle cx="170" cy="200" r="0" data-fx-stop/></g>
+                <g data-on="4"><circle cx="140" cy="80" r="0" data-fx-stop/></g>
+                <g data-on="5"><circle cx="120" cy="332" r="0" data-fx-stop/></g>
+              </g>
+              <g data-fx-story-marker transform="translate(120 340)">
+                <circle r="14" class="partstory__halo"/>
+                <circle r="5" class="partstory__tool"/>
+                <path d="M0 -24 V-8 M0 8 V24 M-24 0 H-8 M8 0 H24" class="partstory__cross"/>
+              </g>
+            </svg>
+            <div>
+              <div class="fx-story__meter"><span></span></div>
+              <div class="fx-story__foot">
+                <span class="fx-story__big" data-fx-story-readout="op">OP 00</span>
+                <span class="fx-story__small" data-fx-story-readout="status">CATIA V5 · Stress-Analyse</span>
+              </div>
+            </div>
+          </div>
+          <ol class="fx-story__steps">
+            <li class="fx-story__step" data-op="OP 00" data-status="CATIA V5 · Stress-Analyse" data-state="In Konstruktion">
+              <span class="fx-story__code">01 · Engineering</span>
+              <h3>Erst gerechnet, dann gefräst.</h3>
+              <p>Unsere Konstruktion legt den Halter in CATIA V5 aus, rechnet Lastfälle und Brandschutz nach und toleriert jedes Maß – bevor ein Gramm Aluminium angefasst wird.</p>
+            </li>
+            <li class="fx-story__step" data-op="OP 10" data-status="5-Achs-Zerspanung · AL 7075-T6" data-state="Fertigung">
+              <span class="fx-story__code">02 · Zerspanung</span>
+              <h3>Aus dem Vollen, in einer Aufspannung.</h3>
+              <p>Das 5-Achs-Zentrum fräst Kontur und Erleichterungsbohrungen aus einem Block AL 7075-T6. Eine Aufspannung heißt: kein Versatz, kein Nacharbeiten.</p>
+            </li>
+            <li class="fx-story__step" data-op="OP 20" data-status="Koordinatenmessung · 42 Merkmale" data-state="Prüfung">
+              <span class="fx-story__code">03 · Messen</span>
+              <h3>42 Merkmale, alle im Toleranzfeld.</h3>
+              <p>Die Koordinatenmessmaschine prüft jedes zeichnungsrelevante Maß. Die größte Abweichung an diesem Teil: zwölf Tausendstel Millimeter.</p>
+            </li>
+            <li class="fx-story__step" data-op="OP 30" data-status="FAI nach EN 9102" data-state="Erstmuster">
+              <span class="fx-story__code">04 · Erstmuster</span>
+              <h3>Erstmusterprüfung, lückenlos dokumentiert.</h3>
+              <p>Materialzeugnis, Messprotokoll, Oberflächennachweis: Der FAI-Bericht nach EN 9102 geht mit dem Teil an den Kunden – rückverfolgbar bis zur Charge.</p>
+            </li>
+            <li class="fx-story__step" data-op="OP 40" data-status="Ans Band · Finkenwerder" data-state="Freigegeben">
+              <span class="fx-story__code">05 · Auslieferung</span>
+              <h3>Freigegeben – und pünktlich am Band.</h3>
+              <p>Danach geht der Halter in Serie: 38 Sätze im Monat, angeliefert an die Endlinie auf der anderen Seite des Zauns. 98,7 Prozent davon pünktlich.</p>
+            </li>
+          </ol>
         </div>
       </div>
     </section>
@@ -268,6 +372,79 @@
       </div>
     </section>
 
+
+    <!-- ===== Shop floor: pinned horizontal showcase (js/fx.js · data-fx-hs) ===== -->
+    <section class="fx-hs" data-fx-hs aria-label="Fertigung und Technik">
+      <div class="fx-hs__sticky">
+        <div class="container fx-hs__head">
+          <div>
+            <p class="kicker mono">// Werksrundgang</p>
+            <h2>Sechs Stationen. <em>Ein Werk.</em></h2>
+          </div>
+          <span class="fx-hs__count" data-fx-hs-count>01 / 06</span>
+        </div>
+        <div class="fx-hs__track">
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ha-5axis/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Halle 2 · Zerspanung</span>
+              <h3>5-Achs-Fräszentren</h3>
+              <p>Sechs Bearbeitungszentren für Aluminium und Titan, mannlos im Nachtbetrieb – Bauteile bis 3 Meter.</p>
+              <div class="fx-hs__stats"><span><b>6</b>Zentren</span><span><b>±0,01</b>mm Wiederholgenauigkeit</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ha-autoclave/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Halle 3 · Composite</span>
+              <h3>Autoklav</h3>
+              <p>Faserverbund-Bauteile für Kabine und Klimatechnik, ausgehärtet bei bis zu 180 °C und 7 bar.</p>
+              <div class="fx-hs__stats"><span><b>180 °C</b>Härtetemperatur</span><span><b>4,5 m</b>Nutzlänge</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ha-sheet/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Halle 1 · Blech</span>
+              <h3>Umformung &amp; Fügen</h3>
+              <p>Streckziehen, Abkanten, Nieten: Blechbaugruppen von der Konsole bis zur Trennwandstruktur.</p>
+              <div class="fx-hs__stats"><span><b>1.200</b>Teilenummern</span><span><b>40 t</b>Presskraft</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ha-cmm/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Qualität</span>
+              <h3>Koordinatenmesstechnik</h3>
+              <p>Zwei klimatisierte Messräume mit CMM und Laserscanner – jedes Erstmuster wird hier freigegeben.</p>
+              <div class="fx-hs__stats"><span><b>2</b>Messräume</span><span><b>0,9 µm</b>Messunsicherheit</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ha-cabin/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Endmontage</span>
+              <h3>Kabinenmonumente</h3>
+              <p>Galleys und Stauraumlösungen, montiert, geprüft und zur Endlinie geliefert – Takt nach Bedarf.</p>
+              <div class="fx-hs__stats"><span><b>38</b>Sätze / Monat</span><span><b>0</b>Fehlteile 2025</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ha-aog/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">MRO · 24/7</span>
+              <h3>AOG-Desk</h3>
+              <p>Wenn ein Flugzeug am Boden steht: Rückmeldung in zwei Stunden, Tauschteil aus dem Pool, rund um die Uhr.</p>
+              <div class="fx-hs__stats"><span><b>2 h</b>Rückmeldung</span><span><b>24/7</b>erreichbar</span></div>
+            </div>
+          </article>
+        </div>
+        <div class="container">
+          <div class="fx-hs__bar"><span class="fx-hs__fill"></span></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== Founder statement ===== -->
     <section class="section">
       <div class="container split">
@@ -296,7 +473,7 @@
     </section>
 
     <!-- ===== CTA band ===== -->
-    <section class="cta-band">
+    <section class="cta-band fx-spot">
       <div class="container cta-band__inner">
         <div>
           <p class="kicker mono reveal">// Nächster Schritt</p>
@@ -337,6 +514,7 @@
   </footer>
 
   <script src="js/main.js" defer></script>
+  <script src="js/fx.js" defer></script>
   <!-- Flight-route hero loads only on the home page -->
   <script src="js/hero-flight.js" defer></script>
 </body>

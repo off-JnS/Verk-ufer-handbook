@@ -21,6 +21,22 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   --container: 1160px;
+
+  /* Premium motion layer (css/fx.css) */
+  --fx-accent: var(--clr-signal);
+  --fx-accent-2: var(--clr-glass);
+  --fx-bg: var(--clr-ink);
+  --fx-surface: var(--clr-ink-2);
+  --fx-text: var(--clr-paper);
+  --fx-muted: var(--clr-fog);
+  --fx-line: var(--clr-line);
+  --fx-display: var(--font-display);
+  --fx-mono: var(--font-mono);
+  --fx-radius: 8px;
+  --fx-container: var(--container);
+  --fx-header-h: 4.6rem;
+  --fx-glare: rgba(245, 197, 24, 0.1);
+  --fx-spot: rgba(111, 209, 189, 0.12);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1219,3 +1235,40 @@ h3 { font-size: 1.15rem; }
 @media (prefers-reduced-motion: reduce) {
   .telemetry__dot { animation: none; }
 }
+
+/* ---------- Premium motion showcases (behaviour: js/fx.js, layout: css/fx.css) ---------- */
+.accent { color: var(--clr-signal); }
+
+/* Blade inspection story */
+.bladestory__waves path { fill: none; stroke: rgba(127, 180, 217, 0.35); stroke-width: 1.2; }
+.bladestory__twin path { fill: none; stroke: rgba(111, 209, 189, 0.35); stroke-width: 1; stroke-dasharray: 2 5; }
+.bladestory__tower { fill: #C9D6DB; }
+.bladestory__blade { fill: #E4ECEF; }
+.bladestory__hub { fill: #C9D6DB; stroke: var(--clr-ink); stroke-width: 2; }
+.bladestory__rotor { transform-origin: 300px 190px; transform-box: view-box; }
+.bladestory[data-active="5"] .bladestory__rotor { animation: blade-spin 6s linear infinite; }
+@keyframes blade-spin { to { transform: rotate(360deg); } }
+.bladestory__finding circle:last-of-type { fill: #FF6B4A; }
+.bladestory__finding path, .bladestory__patch path { fill: none; stroke: var(--clr-fog); stroke-width: 1; }
+.bladestory__finding text, .bladestory__patch text { font-family: var(--font-mono); font-size: 12px; fill: var(--clr-paper); }
+.bladestory__patch rect { fill: var(--clr-glass); }
+/* Once the rotor turns again the markers on the blade make no sense */
+.bladestory[data-active="5"] .bladestory__finding.is-on,
+.bladestory[data-active="5"] .bladestory__patch.is-on { opacity: 0; }
+.bladestory__vessel path, .bladestory__vessel rect { fill: var(--clr-steel); }
+.bladestory__ghost { fill: none; stroke: rgba(141, 166, 174, 0.35); stroke-width: 1.2; stroke-dasharray: 3 5; }
+.bladestory__path { fill: none; stroke: var(--clr-signal); stroke-width: 2.2; stroke-linecap: round; }
+.bladestory__drone { fill: var(--clr-ink); stroke: var(--clr-signal); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bladestory__stops [data-on] { opacity: 1; }
+
+/* Deployment timeline (leistungen.html): numbers light up as the fill passes */
+.timeline__num { position: relative; z-index: 2; transition: background 0.4s ease, color 0.4s ease; }
+.timeline__step.is-passed .timeline__num { background: var(--clr-signal); color: var(--clr-ink); }
+
+/* Hero: gusts follow the pointer/finger */
+.hero { touch-action: pan-y; }
+
+/* Hazard stripes creep sideways like a warning barrier */
+.hazard { animation: hazard-crawl 1.6s linear infinite; background-size: 45.25px 45.25px; }
+@keyframes hazard-crawl { to { background-position: 45.25px 0; } }
+@media (prefers-reduced-motion: reduce) { .hazard { animation: none; } .bladestory__rotor { animation: none !important; } }

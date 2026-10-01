@@ -7,42 +7,23 @@
 (function () {
   "use strict";
 
-  /* ---------- Mobile navigation ---------- */
+  /* ---------- Mobile navigation ----------
+     Starter keeps it simple: a plain dropdown under the header. */
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.getElementById("main-nav");
 
   if (toggle && nav) {
-    var navHeader = document.querySelector(".site-header");
-    // Drawer footer: phone + hours (hidden on desktop via CSS)
-    nav.insertAdjacentHTML(
-      "beforeend",
-      '<div class="main-nav__meta">' +
-        '<a href="tel:+494055534218">040 555 342 18</a>' +
-        "Mo–Do 7–16:30 Uhr · Fr 7–14 Uhr<br>Aufmaß in Barmbek kostenlos" +
-      "</div>"
-    );
-
-    // Scrim behind the drawer; tap outside to close
-    var scrim = document.createElement("div");
-    scrim.className = "nav-scrim";
-    scrim.setAttribute("aria-hidden", "true");
-    document.body.appendChild(scrim);
-
     var setNav = function (open) {
       nav.classList.toggle("is-open", open);
-      scrim.classList.toggle("is-open", open);
-      if (navHeader) navHeader.classList.toggle("nav-open", open);
       toggle.setAttribute("aria-expanded", String(open));
       toggle.setAttribute("aria-label", open ? "Menü schließen" : "Menü öffnen");
-      document.body.style.overflow = open ? "hidden" : "";
     };
 
     toggle.addEventListener("click", function () {
       setNav(!nav.classList.contains("is-open"));
     });
 
-    scrim.addEventListener("click", function () { setNav(false); });
-
+    // Close the menu after a link is tapped (one-pager anchors)
     nav.addEventListener("click", function (e) {
       if (e.target.tagName === "A") setNav(false);
     });

@@ -6,45 +6,29 @@
 (function () {
   "use strict";
 
-  /* ---------- Mobile navigation ---------- */
+  /* ---------- Mobile navigation ----------
+     Starter keeps it simple: a plain dropdown under the header. */
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.getElementById("main-nav");
 
   if (toggle && nav) {
-    var navHeader = document.querySelector(".site-header");
-    // Card footer for the full-screen "Tageskarte" menu (hidden on desktop via CSS)
-    nav.insertAdjacentHTML(
-      "beforeend",
-      '<div class="main-nav__meta">' +
-        "<strong>Mo–Fr 8–18 · Sa 9–18 · So 10–17</strong><br>" +
-        "Bahrenfelder Straße 87 · Ottensen<br>" +
-        '<a href="tel:+494055512340">040 555 123 40</a>' +
-      "</div>"
-    );
-
-    var closeNav = function () {
-      nav.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-      toggle.setAttribute("aria-label", "Menü öffnen");
-      document.body.style.overflow = "";
-      if (navHeader) navHeader.classList.remove("nav-open");
+    var setNav = function (open) {
+      nav.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Menü schließen" : "Menü öffnen");
     };
 
     toggle.addEventListener("click", function () {
-      var open = nav.classList.toggle("is-open");
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Menü schließen" : "Menü öffnen");
-      document.body.style.overflow = open ? "hidden" : "";
-      if (navHeader) navHeader.classList.toggle("nav-open", open);
+      setNav(!nav.classList.contains("is-open"));
     });
 
     // Close the menu after a link is tapped (one-pager anchors)
     nav.addEventListener("click", function (e) {
-      if (e.target.tagName === "A") closeNav();
+      if (e.target.tagName === "A") setNav(false);
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && nav.classList.contains("is-open")) closeNav();
+      if (e.key === "Escape" && nav.classList.contains("is-open")) setNav(false);
     });
   }
 

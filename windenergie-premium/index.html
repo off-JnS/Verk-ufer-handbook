@@ -58,7 +58,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/fx.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23071820'/%3E%3Cpath d='M16 17V27M16 16l8-5M16 16l-8-5' stroke='%23F5C518' stroke-width='2.4' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%237FB4D9'/%3E%3C/svg%3E">
+  <!-- Repeat visits in this session skip the loader (see css/fx.css) -->
+  <script>try{if(sessionStorage.getItem("fx-seen"))document.documentElement.classList.add("fx-skip-loader");sessionStorage.setItem("fx-seen","1")}catch(e){}</script>
 </head>
 <body>
 
@@ -107,7 +110,7 @@
     <!-- ===== Immersive hero: canvas wind-field particle simulation (Premium experience) ===== -->
     <section class="hero" data-hero>
       <!-- Canvas mounts here; CSS storm gradient serves as no-canvas fallback -->
-      <canvas id="wind-canvas" class="hero__canvas" aria-hidden="true"></canvas>
+      <canvas id="wind-canvas" class="hero__canvas" aria-hidden="true" data-fx-cursor="Böe"></canvas>
 
       <!-- Turbine silhouettes, rotors animated in CSS (paused via prefers-reduced-motion) -->
       <div class="hero__turbines" aria-hidden="true">
@@ -133,12 +136,12 @@
 
       <div class="hero__overlay" aria-hidden="true"></div>
 
-      <div class="container hero__content">
+      <div class="container hero__content" data-fx-hero>
         <div class="hero__grid">
           <div class="hero__copy">
             <p class="mono hero__coords reveal">53,4712° N · 9,9797° O — Hamburg, Harburger Binnenhafen</p>
             <p class="mono hero__wind reveal" aria-hidden="true">Windlage Deutsche Bucht: <span data-windline>SW 5 Bft · 19 kn</span></p>
-            <h1 class="reveal" data-reveal-delay="1">Wind ist launisch.<br>Wir sind es nicht.</h1>
+            <h1 class="reveal" data-reveal-delay="1" data-fx-delay="1.3">Wind ist launisch.<br>Wir sind es nicht.</h1>
             <p class="hero__sub reveal" data-reveal-delay="2">
               Elbwind hält 380 Offshore-Anlagen in Nord- und Ostsee am Laufen –
               Betriebsführung, Instandhaltung und Inspektion, gesteuert aus einer
@@ -151,7 +154,7 @@
           </div>
 
           <!-- Live telemetry panel: the fleet's key numbers, read like the Leitwarte reads them -->
-          <aside class="telemetry reveal" data-reveal-delay="2" aria-label="Elbwind in Zahlen">
+          <aside class="telemetry fx-spot reveal" data-reveal-delay="2" aria-label="Elbwind in Zahlen">
             <p class="telemetry__head mono"><span class="telemetry__dot" aria-hidden="true"></span>Live-Telemetrie · Flotte</p>
             <div class="telemetry__row">
               <span class="telemetry__label mono">Nennleistung</span>
@@ -215,6 +218,116 @@
       </div>
     </section>
 
+
+    <!-- ===== Blade inspection, scroll-driven (js/fx.js · data-fx-story) ===== -->
+    <section class="section fx-story bladestory" data-fx-story aria-label="Eine Rotorblatt-Inspektion in fünf Schritten">
+      <div class="container">
+        <div class="fx-story__intro">
+          <p class="kicker mono">// Ein Einsatz</p>
+          <h2>Ein Rotorblatt.<br><span class="accent">Vier Stunden. Kein Rätselraten.</span></h2>
+        </div>
+        <div class="fx-story__grid">
+          <div class="fx-story__visual" aria-hidden="true">
+            <div class="fx-story__bar"><span>WTG 07 · Nordsee Reef I</span><b data-fx-story-readout="state">Stillstand</b></div>
+            <svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="blade-sea" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#0E2F3D"/>
+                  <stop offset="1" stop-color="#071820"/>
+                </linearGradient>
+                <radialGradient id="blade-glow">
+                  <stop offset="0" stop-color="#F5C518" stop-opacity="0.6"/>
+                  <stop offset="1" stop-color="#F5C518" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <rect y="330" width="600" height="70" fill="url(#blade-sea)"/>
+              <g class="bladestory__waves">
+                <path d="M0 336 Q15 331 30 336 T60 336 T90 336 T120 336 T150 336 T180 336 T210 336 T240 336 T270 336 T300 336 T330 336 T360 336 T390 336 T420 336 T450 336 T480 336 T510 336 T540 336 T570 336 T600 336"/>
+                <path d="M0 352 Q15 347 30 352 T60 352 T90 352 T120 352 T150 352 T180 352 T210 352 T240 352 T270 352 T300 352 T330 352 T360 352 T390 352 T420 352 T450 352 T480 352 T510 352 T540 352 T570 352 T600 352"/>
+              </g>
+              <!-- twin grid, appears at the end -->
+              <g class="bladestory__twin" data-on="5">
+                <path d="M300 40 V330 M250 40 V330 M350 40 V330 M200 100 H400 M200 160 H400 M200 220 H400 M200 280 H400"/>
+              </g>
+              <!-- turbine: tower, nacelle, three blades (one pointing up) -->
+              <path class="bladestory__tower" d="M296 190 L290 336 H310 L304 190 Z"/>
+              <g class="bladestory__rotor">
+                <path class="bladestory__blade" d="M300 186 C292 150 293 90 298 40 C301 38 303 40 304 44 C307 90 308 150 304 186 Z"/>
+                <path class="bladestory__blade" d="M300 186 C292 150 293 90 298 40 C301 38 303 40 304 44 C307 90 308 150 304 186 Z" transform="rotate(120 300 190)"/>
+                <path class="bladestory__blade" d="M300 186 C292 150 293 90 298 40 C301 38 303 40 304 44 C307 90 308 150 304 186 Z" transform="rotate(240 300 190)"/>
+                <circle cx="300" cy="190" r="9" class="bladestory__hub"/>
+              </g>
+              <!-- finding and repair on the upper blade -->
+              <g class="bladestory__finding" data-on="3">
+                <circle cx="299" cy="78" r="16" fill="url(#blade-glow)"/>
+                <circle cx="299" cy="78" r="4.5"/>
+                <path d="M306 72 L360 52 H470"/>
+                <text x="364" y="46">Erosion · Kat. 2</text>
+              </g>
+              <g class="bladestory__patch" data-on="4">
+                <rect x="294" y="70" width="11" height="16" rx="2"/>
+                <path d="M306 88 L360 108 H470"/>
+                <text x="364" y="124">IRATA-Reparatur</text>
+              </g>
+              <!-- service vessel -->
+              <g class="bladestory__vessel">
+                <path d="M92 326 H176 L168 338 H100 Z"/>
+                <rect x="118" y="314" width="30" height="12" rx="2"/>
+              </g>
+              <!-- drone flight path: deck, up the leading edge, over the tip, down the trailing edge, back -->
+              <path class="bladestory__ghost" d="M140 312 C170 250 250 230 286 186 C282 140 282 90 288 60 C292 30 312 30 314 60 C318 100 318 150 316 186 C360 230 300 290 170 312"/>
+              <path class="bladestory__path" data-fx-story-path d="M140 312 C170 250 250 230 286 186 C282 140 282 90 288 60 C292 30 312 30 314 60 C318 100 318 150 316 186 C360 230 300 290 170 312"/>
+              <g class="bladestory__stops">
+                <g data-on="1"><circle cx="140" cy="312" r="0" data-fx-stop/></g>
+                <g data-on="2"><circle cx="283" cy="120" r="0" data-fx-stop/></g>
+                <g data-on="3"><circle cx="290" cy="60" r="0" data-fx-stop/></g>
+                <g data-on="4"><circle cx="317" cy="120" r="0" data-fx-stop/></g>
+                <g data-on="5"><circle cx="170" cy="312" r="0" data-fx-stop/></g>
+              </g>
+              <g data-fx-story-marker transform="translate(140 312)">
+                <circle r="16" fill="url(#blade-glow)"/>
+                <path class="bladestory__drone" d="M-9 -2 H9 M-9 -2 V-5 M9 -2 V-5 M-4 -2 H4 V3 H-4 Z"/>
+              </g>
+            </svg>
+            <div>
+              <div class="fx-story__meter"><span></span></div>
+              <div class="fx-story__foot">
+                <span class="fx-story__big" data-fx-story-readout="time">T+00:00</span>
+                <span class="fx-story__small" data-fx-story-readout="status">Drohne startet</span>
+              </div>
+            </div>
+          </div>
+          <ol class="fx-story__steps">
+            <li class="fx-story__step" data-time="T+00:00" data-status="Drohne startet" data-state="Stillstand">
+              <span class="fx-story__code">01 · Start vom Deck</span>
+              <h3>Die Anlage steht, die Drohne startet.</h3>
+              <p>Rotor in Wartungsstellung, Blatt A senkrecht. Die Inspektionsdrohne hebt vom Deck der Elbe Runner ab und fliegt eine vorberechnete Bahn – ohne dass jemand die Turmleiter hochmuss.</p>
+            </li>
+            <li class="fx-story__step" data-time="T+00:18" data-status="Scan · 4.800 Bilder" data-state="Scan läuft">
+              <span class="fx-story__code">02 · Vorderkante</span>
+              <h3>4.800 Bilder pro Blatt.</h3>
+              <p>Millimetergenaue Aufnahmen entlang der Vorderkante, wo Regen und Salz am stärksten nagen. Die Daten gehen noch in der Luft an die Leitwarte in Harburg.</p>
+            </li>
+            <li class="fx-story__step" data-time="T+00:42" data-status="Befund · Kat. 2 von 5" data-state="Befund">
+              <span class="fx-story__code">03 · Blattspitze</span>
+              <h3>Erosion erkannt, bevor sie teuer wird.</h3>
+              <p>Die Auswertung markiert eine Erosionsstelle Kategorie 2 kurz vor der Spitze. Heute ein Nachmittag Arbeit – in einem Jahr ein Blatttausch.</p>
+            </li>
+            <li class="fx-story__step" data-time="T+03:10" data-status="Reparatur · Seilzugang" data-state="Reparatur">
+              <span class="fx-story__code">04 · Hinterkante</span>
+              <h3>Repariert am Seil, nicht am Kran.</h3>
+              <p>Zwei IRATA-Techniker seilen sich ab, schleifen, füllen, versiegeln. Kein Kranschiff, kein Wetterfenster von Tagen – nur ein ruhiger Nachmittag.</p>
+            </li>
+            <li class="fx-story__step" data-time="T+04:00" data-status="Im Digital Twin" data-state="Am Netz">
+              <span class="fx-story__code">05 · Zurück an Deck</span>
+              <h3>Dokumentiert im digitalen Zwilling.</h3>
+              <p>Fotos, Befund und Reparatur landen im Digital Twin der Anlage – für Betreiber, Versicherer und die nächste Inspektion. Der Rotor dreht wieder.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== Live operations board (departure-board style) ===== -->
     <section class="section section--panel">
       <div class="container">
@@ -269,6 +382,79 @@
       </div>
     </section>
 
+
+    <!-- ===== Fleet & equipment: pinned horizontal showcase (js/fx.js · data-fx-hs) ===== -->
+    <section class="fx-hs" data-fx-hs aria-label="Flotte und Technik">
+      <div class="fx-hs__sticky">
+        <div class="container fx-hs__head">
+          <div>
+            <p class="kicker mono">// Flotte &amp; Technik</p>
+            <h2>Was rausfährt, <span class="accent">wenn es zählt.</span></h2>
+          </div>
+          <span class="fx-hs__count" data-fx-hs-count>01 / 06</span>
+        </div>
+        <div class="fx-hs__track">
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ew-ctv/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Schiff · CTV</span>
+              <h3>Elbe Runner</h3>
+              <p>Crew Transfer Vessel für zwölf Techniker, 26 Knoten schnell, Walk-to-work bis 1,8 m Welle.</p>
+              <div class="fx-hs__stats"><span><b>26 kn</b>Reisegeschwindigkeit</span><span><b>12</b>Techniker</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ew-sov/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Schiff · SOV</span>
+              <h3>Baltic Wind</h3>
+              <p>Service Operation Vessel mit Bewegungskompensation: zwei Wochen am Stück im Park, 60 Kojen an Bord.</p>
+              <div class="fx-hs__stats"><span><b>60</b>Kojen</span><span><b>14 d</b>am Stück im Park</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ew-drone/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Team · Blade</span>
+              <h3>Drohnenstaffel</h3>
+              <p>Vier Inspektionsdrohnen mit vorberechneten Flugbahnen – ein Blatt ist in 20 Minuten gescannt.</p>
+              <div class="fx-hs__stats"><span><b>20 min</b>pro Blatt</span><span><b>1 mm</b>Auflösung</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ew-rope/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Team · Seil</span>
+              <h3>Seilzugang IRATA</h3>
+              <p>Zwölf zertifizierte Industriekletterer für Blattreparaturen bis Kategorie 4 – ohne Kranschiff.</p>
+              <div class="fx-hs__stats"><span><b>12</b>Kletterer</span><span><b>Kat. 4</b>Reparaturtiefe</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ew-control/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Leitwarte</span>
+              <h3>Harburg 24/7</h3>
+              <p>SCADA aller 380 Anlagen auf einer Monitorwand. Nachts um drei entscheidet hier jemand, ob das Team ausläuft.</p>
+              <div class="fx-hs__stats"><span><b>380</b>Anlagen live</span><span><b>24/7</b>besetzt</span></div>
+            </div>
+          </article>
+          <article class="fx-hs__card">
+            <div class="fx-hs__media"><img src="https://picsum.photos/seed/ew-stock/800/500" alt="" width="800" height="500" loading="lazy"></div>
+            <div class="fx-hs__body">
+              <span class="fx-hs__code">Lager</span>
+              <h3>Ersatzteile Eemshaven</h3>
+              <p>Umrichter, Pitchmotoren, Getriebeteile direkt am Hafen – das spart im Störfall einen ganzen Tag.</p>
+              <div class="fx-hs__stats"><span><b>2.400</b>Teile vorrätig</span><span><b>&lt; 1 h</b>bis an Bord</span></div>
+            </div>
+          </article>
+        </div>
+        <div class="container">
+          <div class="fx-hs__bar"><span class="fx-hs__fill"></span></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== Founder statement ===== -->
     <section class="section">
       <div class="container split">
@@ -295,7 +481,7 @@
     </section>
 
     <!-- ===== CTA band: inverted, in warning paint ===== -->
-    <section class="cta-band cta-band--signal">
+    <section class="cta-band cta-band--signal fx-spot">
       <div class="container cta-band__inner">
         <div>
           <p class="kicker mono reveal">// Nächster Schritt</p>
@@ -336,6 +522,7 @@
   </footer>
 
   <script src="js/main.js" defer></script>
+  <script src="js/fx.js" defer></script>
   <!-- Wind-field hero loads only on the home page, as a deferred module -->
   <script src="js/hero-wind.js" defer></script>
 </body>

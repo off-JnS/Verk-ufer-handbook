@@ -47,6 +47,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/fx.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23071820'/%3E%3Cpath d='M16 17V27M16 16l8-5M16 16l-8-5' stroke='%23F5C518' stroke-width='2.4' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%237FB4D9'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -102,7 +103,7 @@
         <h2 class="section-title-left reveal" data-reveal-delay="1">Wo unsere Teams anlegen.</h2>
 
         <div class="seamap-wrap reveal" data-reveal-delay="2">
-          <svg class="seamap" viewBox="0 0 900 420" role="img" aria-label="Stilisierte Karte von Nord- und Ostsee mit den Standorten der sechs betreuten Windparks">
+          <svg class="seamap" data-fx-draw viewBox="0 0 900 420" role="img" aria-label="Stilisierte Karte von Nord- und Ostsee mit den Standorten der sechs betreuten Windparks">
             <defs>
               <radialGradient id="parkGlow" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#F5C518" stop-opacity="0.9"/>
@@ -126,9 +127,9 @@
 
             <!-- stylised coastline: German Bight and Baltic -->
             <path d="M60 330 Q140 300 200 320 Q260 340 300 330 Q330 322 340 340 L340 420 L60 420 Z"
-                  fill="#0B2430" stroke="#2C566B" stroke-width="1.5"/>
+                  fill="#0B2430" stroke="#2C566B" stroke-width="1.5" data-fx-draw-el/>
             <path d="M430 350 Q500 330 560 345 Q640 362 700 340 Q780 315 860 335 L860 420 L430 420 Z"
-                  fill="#0B2430" stroke="#2C566B" stroke-width="1.5"/>
+                  fill="#0B2430" stroke="#2C566B" stroke-width="1.5" data-fx-draw-el/>
 
             <!-- Hamburg base -->
             <circle cx="330" cy="382" r="6" fill="#F5C518"/>
@@ -143,6 +144,16 @@
               <path d="M330 382 Q330 250 355 165"/>
               <path d="M330 382 Q470 300 590 235"/>
               <path d="M330 382 Q560 330 725 200"/>
+            </g>
+
+            <!-- solid routes that draw themselves on reveal (js/fx.js) -->
+            <g stroke="#F5C518" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.9">
+              <path d="M330 382 Q240 300 155 205" data-fx-draw-el/>
+              <path d="M330 382 Q250 270 205 150" data-fx-draw-el/>
+              <path d="M330 382 Q290 260 275 105" data-fx-draw-el/>
+              <path d="M330 382 Q330 250 355 165" data-fx-draw-el/>
+              <path d="M330 382 Q470 300 590 235" data-fx-draw-el/>
+              <path d="M330 382 Q560 330 725 200" data-fx-draw-el/>
             </g>
 
             <!-- wind parks -->
@@ -277,5 +288,6 @@
   </footer>
 
   <script src="js/main.js" defer></script>
+  <script src="js/fx.js" defer></script>
 </body>
 </html>

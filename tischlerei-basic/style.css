@@ -523,95 +523,23 @@ h3 { font-size: 1.15rem; }
 }
 
 @media (max-width: 700px) {
-  .nav-toggle { display: flex; position: relative; z-index: 60; }
-  .nav-toggle[aria-expanded="true"] span { background: var(--clr-paper); }
+  .nav-toggle { display: flex; }
 
-  /* Workshop drawer: slides in from the left like a tool cabinet —
-     dark walnut, ruler-tick edge, hours & phone at the foot. */
+  /* Starter menu: a plain dropdown list under the sticky header.
+     No drawer, no overlay, no staggered entries — those are part of the
+     Professional and Premium packages. */
   .main-nav {
-    position: fixed;
-    top: 0; left: 0; bottom: 0; right: auto;
-    width: min(86%, 340px);
-    background: var(--clr-ink);
-    /* ruler ticks along the drawer's right edge */
-    border-right: 6px solid var(--clr-wood);
-    background-image: repeating-linear-gradient(
-      to bottom,
-      transparent 0 22px,
-      rgba(183, 126, 59, 0.35) 22px 24px
-    );
-    background-size: 10px 100%;
-    background-position: right;
-    background-repeat: no-repeat;
-    box-shadow: 30px 0 60px -20px rgba(42, 33, 26, 0.6);
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    gap: 0;
-    padding: 5rem 2rem 2rem;
-    transform: translateX(-105%);
-    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0.28, 1);
-    z-index: 55;
+    display: none;
+    position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 0.25rem 1.25rem 1.25rem;
+    background: var(--clr-paper);
+    border-bottom: 1px solid var(--clr-line);
+    box-shadow: 0 16px 24px -18px rgba(0, 0, 0, 0.35);
   }
-
-  .main-nav.is-open { transform: translateX(0); }
-
-  .main-nav::before {
-    content: "Werkstatt-Navigation";
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
-    color: var(--clr-wood);
-    margin-bottom: 1.6rem;
-  }
-
-  .main-nav a:not(.main-nav__cta) {
-    display: block;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: var(--clr-paper);
-    padding: 0.8rem 0;
-    border-bottom: 1px solid rgba(246, 241, 231, 0.14);
-    opacity: 0;
-    transform: translateX(-24px);
-    transition: opacity 0.35s ease, transform 0.35s ease, color 0.2s ease;
-  }
-  .main-nav a:not(.main-nav__cta):hover { color: var(--clr-wood); }
-  .main-nav.is-open a:not(.main-nav__cta) { opacity: 1; transform: none; }
-  .main-nav.is-open a:nth-child(1) { transition-delay: 0.1s; }
-  .main-nav.is-open a:nth-child(2) { transition-delay: 0.17s; }
-  .main-nav.is-open a:nth-child(3) { transition-delay: 0.24s; }
-
-  .main-nav__cta {
-    margin-top: 1.8rem;
-    text-align: center;
-    opacity: 0;
-    transform: translateX(-24px);
-    transition: opacity 0.35s ease 0.31s, transform 0.35s ease 0.31s, background 0.2s ease;
-  }
-  .main-nav.is-open .main-nav__cta { opacity: 1; transform: none; }
-
-  /* injected drawer footer: hours + phone (see script.js) */
-  .main-nav__meta {
-    margin-top: auto;
-    font-size: 0.85rem;
-    line-height: 1.7;
-    color: rgba(246, 241, 231, 0.65);
-    opacity: 0;
-    transition: opacity 0.4s ease 0.38s;
-  }
-  .main-nav.is-open .main-nav__meta { opacity: 1; }
-  .main-nav__meta a {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--clr-wood);
-    text-decoration: none;
-    display: block;
-    margin-bottom: 0.2rem;
-  }
+  .main-nav.is-open { display: flex; }
+  .main-nav a { padding: 0.85rem 0; border-bottom: 1px solid var(--clr-line); }
+  .main-nav__cta { margin-top: 1rem; text-align: center; border-bottom: 0 !important; }
 
   .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
@@ -622,65 +550,3 @@ h3 { font-size: 1.15rem; }
   .work__grid { grid-template-columns: 1fr; }
   .site-footer__meta { text-align: left; }
 }
-
-@media (min-width: 701px) {
-  .main-nav__meta { display: none; }
-}
-
-/* Scrim behind the drawer (injected by script.js) */
-.nav-scrim {
-  position: fixed;
-  inset: 0;
-  background: rgba(42, 33, 26, 0.45);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  z-index: 65;
-}
-.nav-scrim.is-open { opacity: 1; visibility: visible; }
-
-/* ---------- Signature: sawtooth divider on tinted sections,
-   like the edge of a rip saw ---------- */
-.section--tinted { position: relative; }
-.section--tinted::before {
-  content: "";
-  position: absolute;
-  top: -13px;
-  left: 0;
-  right: 0;
-  height: 14px;
-  background:
-    linear-gradient(135deg, var(--clr-tint) 8px, transparent 0) 0 0 / 16px 14px repeat-x,
-    linear-gradient(-135deg, var(--clr-tint) 8px, transparent 0) 8px 0 / 16px 14px repeat-x;
-  pointer-events: none;
-}
-
-/* ---------- Page entry: workbench settle, no loader (Basic = instant) ---------- */
-@keyframes rise-in {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: none; }
-}
-.hero__copy > * { animation: rise-in 0.6s ease backwards; }
-.hero__copy > *:nth-child(2) { animation-delay: 0.08s; }
-.hero__copy > *:nth-child(3) { animation-delay: 0.16s; }
-.hero__copy > *:nth-child(4) { animation-delay: 0.24s; }
-.hero__copy > *:nth-child(5) { animation-delay: 0.32s; }
-.hero__media img { animation: rise-in 0.7s ease 0.12s backwards; }
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__copy > *, .hero__media img { animation: none; }
-  .main-nav, .main-nav a, .main-nav__cta, .main-nav__meta, .nav-scrim { transition: none; }
-}
-
-/* Mobile: a filtered header would become the containing block for the
-   fixed-position menu (backdrop-filter side effect) - disable it here. */
-@media (max-width: 700px) {
-  .site-header, .site-header.is-scrolled {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-/* While the menu is open the header (the menu's stacking context) must sit
-   above scrims and the tier badge. Class toggled by the nav script. */
-.site-header.nav-open { z-index: 75; }

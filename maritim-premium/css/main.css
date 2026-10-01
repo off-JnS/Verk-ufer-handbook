@@ -23,6 +23,22 @@
 
   --radius: 10px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Premium motion layer (css/fx.css) */
+  --fx-accent: var(--clr-accent);
+  --fx-accent-2: var(--clr-cyan);
+  --fx-bg: var(--clr-ink);
+  --fx-surface: var(--clr-panel);
+  --fx-text: var(--clr-text);
+  --fx-muted: var(--clr-fog);
+  --fx-line: var(--clr-line);
+  --fx-display: var(--font-display);
+  --fx-mono: var(--font-mono);
+  --fx-radius: var(--radius);
+  --fx-container: 1180px;
+  --fx-header-h: 4.6rem;
+  --fx-glare: rgba(69, 214, 196, 0.12);
+  --fx-spot: rgba(69, 214, 196, 0.1);
 }
 
 /* ---------- Reset & base ---------- */
@@ -564,3 +580,19 @@ h1 em, h2 em { font-style: normal; color: var(--clr-accent); }
 /* While the menu is open the header (the menu's stacking context) must sit
    above scrims and the tier badge. Class toggled by the nav script. */
 .site-header.nav-open { z-index: 75; }
+
+/* ---------- Premium motion showcases (behaviour: js/fx.js, layout: css/fx.css) ---------- */
+.fx-hs__head h2 em, .fx-story__intro h2 em { color: var(--clr-accent); }
+
+/* Voyage map inside the scroll story */
+.voyage__grid path { fill: none; stroke: rgba(140, 160, 175, 0.08); }
+.voyage__ghost { fill: none; stroke: rgba(140, 160, 175, 0.3); stroke-width: 1.5; stroke-dasharray: 3 6; }
+.voyage__route { fill: none; stroke: url(#voyage-grad); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.voyage__ports circle { fill: var(--clr-panel); stroke: var(--clr-cyan); stroke-width: 2; transition: fill 0.4s var(--ease); }
+.voyage__ports .is-on circle { fill: var(--clr-cyan); }
+.voyage__ports text { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; fill: var(--clr-text); }
+.voyage__ship { fill: var(--clr-accent); stroke: #fff; stroke-width: 2; }
+
+/* Globe: drag to spin (horizontal), page still scrolls vertically */
+.hero { touch-action: pan-y; }
+.hero.is-dragging { cursor: grabbing; }

@@ -4,15 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#10151C">
-  <title>Pakete, Demos &amp; Wartung – Übersicht</title>
-  <meta name="description" content="Drei Website-Pakete mit je drei Demos, ein echtes Kundenprojekt als Referenz, drei Wartungspakete und die Kombi-Rabatte auf einen Blick.">
+  <meta name="theme-color" content="#F5F2EC">
+  <title>Website-Pakete &amp; Demos</title>
+  <meta name="description" content="Neun voll klickbare Website-Demos in drei Paketen, ein echtes Kundenprojekt, Wartungspakete und Kombi-Rabatte auf einen Blick.">
   <meta name="robots" content="noindex">
+  <!-- Added to the home screen, the hub opens chrome-free like an app,
+       which is how it is best presented on an iPad. -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Demos">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="manifest" href="site.webmanifest">
   <style>
     /* ===================================================================
-       Sales hub. Mobile-first: this page is shown on a phone in front of
-       a customer, so every layout rule starts at the small screen and
-       only widens with min-width queries.
+       Showcase hub. Shown on a phone or an iPad mini in front of a
+       customer, so every rule starts at the small screen and only widens
+       with min-width queries. Breakpoints follow the devices it is shown
+       on: 744px = iPad mini portrait, 1024px+ = iPad mini landscape.
        =================================================================== */
 
     :root {
@@ -21,6 +31,7 @@
       --card: #FFFFFF;
       --fog: #6A7683;
       --line: #E3DCCE;
+      --night: #0B0F14;
 
       /* Website tiers — warm family */
       --starter: #C4692F;
@@ -42,14 +53,18 @@
       --ehso-surface: #1C1C1C;
       --ehso-orange: #F97316;
 
-      --topbar-h: 3.25rem;
-      --radius: 14px;
+      --topbar-h: 3.5rem;
+      --tabbar-h: 3.75rem;
+      --radius: 16px;
       --shadow: 0 18px 40px -28px rgba(16, 21, 28, 0.55);
+      --shadow-img: 0 14px 34px -18px rgba(16, 21, 28, 0.55);
+      --gutter: max(1rem, env(safe-area-inset-left));
+      --gutter-end: max(1rem, env(safe-area-inset-right));
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { -webkit-text-size-adjust: 100%; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -59,22 +74,30 @@
       /* Never let a stray wide child scroll the whole page sideways. */
       overflow-x: hidden;
       -webkit-tap-highlight-color: rgba(232, 67, 28, 0.12);
+      /* Room for the fixed bottom tab bar on phones. */
+      padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
     }
 
-    /* Anything focusable gets a visible ring — the page is operated by thumb,
-       but it still has to survive a keyboard. */
+    /* height:auto lets the CSS aspect-ratio win over the height attribute,
+       which is only there to reserve space before the image loads. */
+    img { display: block; max-width: 100%; height: auto; }
+
     :focus-visible { outline: 2px solid var(--premium); outline-offset: 2px; border-radius: 6px; }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; overflow: hidden;
+      clip: rect(0 0 0 0); white-space: nowrap;
+    }
 
     /* ---------- Layout primitives ---------- */
     .wrap {
       width: 100%;
       max-width: 1180px;
       margin-inline: auto;
-      padding-inline: max(1rem, env(safe-area-inset-left));
-      padding-inline-end: max(1rem, env(safe-area-inset-right));
+      padding-inline: var(--gutter) var(--gutter-end);
     }
 
-    section { scroll-margin-top: calc(var(--topbar-h) + 0.75rem); }
+    section { scroll-margin-top: 0.5rem; }
 
     .band { padding-block: 2.75rem; }
     .band + .band { border-top: 1px solid var(--line); }
@@ -89,80 +112,172 @@
       color: var(--fog);
       margin-bottom: 0.5rem;
     }
-    h2 { font-size: clamp(1.4rem, 5.5vw, 2rem); letter-spacing: -0.02em; line-height: 1.15; }
+    h2 { font-size: clamp(1.45rem, 5.5vw, 2.1rem); letter-spacing: -0.02em; line-height: 1.15; }
     .band__sub { color: var(--fog); font-size: 0.95rem; margin-top: 0.6rem; max-width: 62ch; }
 
-    /* ---------- Sticky top bar ---------- */
+    /* ---------- Tier badges (shared by gallery, viewer, tables) ---------- */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.64rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 0.24rem 0.65rem;
+      white-space: nowrap;
+    }
+    .badge--starter { background: var(--starter-soft); color: var(--starter); }
+    .badge--pro { background: var(--pro-soft); color: var(--pro); }
+    .badge--premium { background: var(--premium-soft); color: var(--premium); }
+    .badge--ref { background: rgba(249, 115, 22, 0.16); color: var(--ehso-orange); }
+
+    /* ---------- Top bar ---------- */
     .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
       background: rgba(245, 242, 236, 0.92);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--line);
       padding-top: env(safe-area-inset-top);
     }
     .topbar__inner {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      justify-content: space-between;
+      gap: 1rem;
       height: var(--topbar-h);
     }
-    .topbar__brand {
-      font-weight: 800;
-      font-size: 0.9rem;
-      letter-spacing: -0.01em;
-      white-space: nowrap;
-      flex: none;
-    }
-    /* The jump chips scroll sideways inside their own track, never the page. */
-    .jump {
-      display: flex;
-      gap: 0.4rem;
-      overflow-x: auto;
-      scrollbar-width: none;
-      scroll-snap-type: x proximity;
-      margin-inline-end: calc(-1 * max(1rem, env(safe-area-inset-right)));
-      padding-inline-end: max(1rem, env(safe-area-inset-right));
-    }
-    .jump::-webkit-scrollbar { display: none; }
-    .jump a {
-      flex: none;
-      scroll-snap-align: start;
+    .brand {
       display: inline-flex;
       align-items: center;
-      min-height: 2rem;
-      padding: 0 0.75rem;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--card);
-      color: var(--fog);
-      font-size: 0.78rem;
-      font-weight: 700;
+      gap: 0.55rem;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: -0.01em;
+      color: inherit;
       text-decoration: none;
       white-space: nowrap;
     }
-    .jump a:active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .brand__mark {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 8px;
+      background: var(--ink);
+      display: grid;
+      place-items: center;
+      flex: none;
+    }
+    .brand__mark i {
+      width: 0.6rem; height: 0.6rem; border-radius: 50%;
+      background: var(--premium);
+      box-shadow: 0.55rem 0 0 -0.12rem var(--starter);
+      transform: translateX(-0.2rem);
+    }
+    /* Section links live in the top bar only where there is room (iPad).
+       Phones get the bottom tab bar instead. */
+    .topnav { display: none; }
+
+    /* ---------- Bottom tab bar (phones) ---------- */
+    .tabbar {
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: 60;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--line);
+      padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    .tabbar a {
+      height: var(--tabbar-h);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      color: var(--fog);
+      text-decoration: none;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: color 0.18s ease;
+    }
+    .tabbar svg { width: 1.4rem; height: 1.4rem; }
+    .tabbar a.is-active { color: var(--ink); }
+    .tabbar a.is-active svg { color: var(--premium); }
+    .tabbar a:active { background: rgba(16, 21, 28, 0.05); }
+
+    /* ---------- Icons ---------- */
+    .ico {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     /* ---------- Hero ---------- */
-    .hero { padding-block: 2.25rem 2.5rem; }
+    .hero { padding-block: 1.75rem 2.5rem; display: grid; gap: 2rem; }
     .hero h1 {
-      font-size: clamp(1.85rem, 8vw, 3rem);
-      line-height: 1.08;
-      letter-spacing: -0.03em;
+      font-size: clamp(2rem, 8.5vw, 3.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
     }
+    .hero h1 em { font-style: normal; color: var(--premium); }
     .hero p {
       color: var(--fog);
-      margin-top: 0.85rem;
-      max-width: 56ch;
+      margin-top: 0.9rem;
+      max-width: 50ch;
       font-size: 1rem;
     }
-    .hero__cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-top: 1.4rem;
+    .hero__cta { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.4rem; }
+    .facts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.25rem; list-style: none; }
+    .facts li {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .facts b { color: var(--premium); }
+
+    /* A fanned stack of real screenshots — the first thing the customer
+       sees is actual work, not a claim about it. */
+    .hero__art {
+      position: relative;
+      aspect-ratio: 16 / 11;
+      width: 100%;
+      max-width: 34rem;
+      margin-inline: auto;
+    }
+    .hero__art img {
+      position: absolute;
+      width: 66%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top;
+      border-radius: 10px;
+      background: #ddd;
+      box-shadow: var(--shadow-img);
+      border: 1px solid rgba(16, 21, 28, 0.08);
+    }
+    .hero__art img:nth-child(1) { left: 0; top: 4%; transform: rotate(-5deg); }
+    .hero__art img:nth-child(2) { right: 0; top: 0; transform: rotate(4deg); }
+    .hero__art img:nth-child(3) { left: 17%; top: 26%; }
+    .hero__art img.hero__phone {
+      width: 21%;
+      aspect-ratio: 390 / 844;
+      left: auto;
+      right: 3%;
+      top: auto;
+      bottom: 0;
+      border: 3px solid var(--ink);
+      border-radius: 12px;
     }
 
     /* ---------- Buttons ---------- */
@@ -172,7 +287,7 @@
       justify-content: center;
       gap: 0.5rem;
       min-height: 2.875rem;   /* 46px — comfortable thumb target */
-      padding: 0 1.15rem;
+      padding: 0 1.2rem;
       border: 1px solid var(--ink);
       border-radius: 999px;
       font: inherit;
@@ -182,45 +297,113 @@
       cursor: pointer;
       background: var(--ink);
       color: #fff;
-      transition: transform 0.15s ease, background 0.15s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
     .btn--ghost { background: transparent; color: var(--ink); }
     .btn:active { transform: scale(0.97); }
 
-    /* ---------- Package tabs ---------- */
-    .tabs {
+    /* ---------- Segmented controls (gallery filter + package tabs) ---------- */
+    .seg {
       display: flex;
-      gap: 0.35rem;
+      gap: 0.25rem;
       background: #EDE7DC;
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 0.3rem;
+      padding: 0.25rem;
       margin-bottom: 1.25rem;
     }
-    .tabs button {
-      flex: 1 1 0;
-      min-height: 2.6rem;
+    .seg button {
+      flex: 1 1 auto;
+      min-height: 2.75rem;    /* 44px */
+      padding: 0 0.6rem;
       border: 0;
       border-radius: 999px;
       background: transparent;
       font: inherit;
       font-weight: 800;
-      font-size: 0.82rem;
-      letter-spacing: 0.02em;
+      font-size: 0.8rem;
       color: var(--fog);
       cursor: pointer;
+      white-space: nowrap;
       transition: background 0.18s ease, color 0.18s ease;
     }
-    .tabs button[aria-selected="true"] {
+    .seg button[aria-selected="true"],
+    .seg button[aria-pressed="true"] {
       background: var(--card);
       color: var(--ink);
       box-shadow: 0 2px 8px -4px rgba(16, 21, 28, 0.4);
     }
-    .tabs button[data-tier="starter"][aria-selected="true"] { color: var(--starter); }
-    .tabs button[data-tier="pro"][aria-selected="true"] { color: var(--pro); }
-    .tabs button[data-tier="premium"][aria-selected="true"] { color: var(--premium); }
+    .seg [data-tier="starter"][aria-selected="true"], .seg [data-filter="starter"][aria-pressed="true"] { color: var(--starter); }
+    .seg [data-tier="pro"][aria-selected="true"], .seg [data-filter="pro"][aria-pressed="true"] { color: var(--pro); }
+    .seg [data-tier="premium"][aria-selected="true"], .seg [data-filter="premium"][aria-pressed="true"] { color: var(--premium); }
 
-    /* Without JS every panel simply stays visible and stacks — nothing is lost. */
+    /* ---------- Demo gallery ---------- */
+    .gallery { display: grid; gap: 1.1rem; }
+    .card {
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: inherit;
+      text-decoration: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .card[hidden] { display: none; }
+    .card:active { transform: scale(0.985); }
+    .card__media {
+      position: relative;
+      margin: 0.5rem 0.5rem 0;
+    }
+    .card__desk {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top;
+      border-radius: 11px;
+      background: #E9E4DA;
+    }
+    .card__phone {
+      position: absolute;
+      right: 0.7rem;
+      bottom: -1.4rem;
+      width: 21%;
+      aspect-ratio: 390 / 844;
+      object-fit: cover;
+      object-position: top;
+      border: 3px solid var(--ink);
+      border-radius: 11px;
+      background: #E9E4DA;
+      box-shadow: var(--shadow-img);
+    }
+    .card__play {
+      position: absolute;
+      left: 0.6rem;
+      bottom: 0.6rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #fff;
+      background: rgba(16, 21, 28, 0.78);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem 0.35rem 0.55rem;
+    }
+    .card__play .ico { width: 0.9rem; height: 0.9rem; fill: currentColor; stroke: none; }
+    .card__body {
+      padding: 0.9rem 1rem 1.05rem;
+      padding-right: 27%;     /* clear the overlapping phone screenshot */
+      display: grid;
+      gap: 0.3rem;
+      justify-items: start;
+    }
+    .card__name { font-size: 1.05rem; line-height: 1.25; letter-spacing: -0.01em; }
+    .card__sector { color: var(--fog); font-size: 0.82rem; line-height: 1.4; }
+
+    /* ---------- Package tiers ---------- */
     .tiers { display: grid; gap: 1rem; }
     .tier {
       background: var(--card);
@@ -249,7 +432,7 @@
 
     .tier__price {
       margin-top: 0.7rem;
-      font-size: clamp(1.7rem, 7vw, 2.1rem);
+      font-size: clamp(1.8rem, 7vw, 2.2rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.05;
@@ -260,20 +443,20 @@
       font-weight: 600;
       color: var(--fog);
       letter-spacing: 0;
-      margin-top: 0.2rem;
+      margin-top: 0.25rem;
     }
     .tier__pitch { color: var(--fog); font-size: 0.92rem; }
 
-    .tier__features { list-style: none; font-size: 0.88rem; display: grid; gap: 0.42rem; }
-    .tier__features li { padding-left: 1.4rem; position: relative; }
-    .tier__features li::before { content: "✓"; position: absolute; left: 0; font-weight: 800; }
-    .t-starter .tier__features li::before { color: var(--starter); }
-    .t-pro .tier__features li::before { color: var(--pro); }
-    .t-premium .tier__features li::before { color: var(--premium); }
-    .tier__features li.plus { font-weight: 700; color: var(--ink); }
-    .tier__features li.plus::before { content: "+"; }
+    .ticks { list-style: none; font-size: 0.88rem; display: grid; gap: 0.45rem; }
+    .ticks li { padding-left: 1.4rem; position: relative; }
+    .ticks li::before { content: "✓"; position: absolute; left: 0; font-weight: 800; }
+    .t-starter .ticks li::before { color: var(--starter); }
+    .t-pro .ticks li::before { color: var(--pro); }
+    .t-premium .ticks li::before { color: var(--premium); }
+    .ticks li.plus { font-weight: 700; color: var(--ink); }
+    .ticks li.plus::before { content: "+"; }
 
-    .tier__demos { display: grid; gap: 0.55rem; margin-top: auto; }
+    .tier__demos { display: grid; gap: 0.5rem; margin-top: auto; }
     .tier__demos-label {
       font-size: 0.66rem;
       font-weight: 800;
@@ -281,39 +464,42 @@
       text-transform: uppercase;
       color: var(--fog);
     }
-    a.demo {
+    a.mini {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      min-height: 3.25rem;   /* 52px */
+      min-height: 3.5rem;
       text-decoration: none;
       color: inherit;
       border: 1px solid var(--line);
-      border-radius: 11px;
-      padding: 0.7rem 0.9rem;
+      border-radius: 12px;
+      padding: 0.45rem 0.8rem 0.45rem 0.45rem;
       transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
     }
-    a.demo > div { flex: 1; min-width: 0; }
-    a.demo strong { display: block; font-size: 0.94rem; line-height: 1.25; }
-    a.demo span { display: block; color: var(--fog); font-size: 0.79rem; line-height: 1.35; }
-    a.demo::after {
-      content: "›";
+    a.mini img {
+      width: 4.5rem;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top;
+      border-radius: 7px;
       flex: none;
-      font-size: 1.4rem;
-      line-height: 1;
-      color: var(--fog);
+      background: #E9E4DA;
     }
-    a.demo:active { transform: scale(0.99); }
-    .t-starter a.demo:active { background: var(--starter-soft); border-color: var(--starter); }
-    .t-pro a.demo:active { background: var(--pro-soft); border-color: var(--pro); }
-    .t-premium a.demo:active { background: var(--premium-soft); border-color: var(--premium); }
+    a.mini > span { flex: 1; min-width: 0; }
+    a.mini strong { display: block; font-size: 0.9rem; line-height: 1.25; }
+    a.mini small { display: block; color: var(--fog); font-size: 0.76rem; line-height: 1.35; }
+    a.mini::after { content: "›"; flex: none; font-size: 1.4rem; line-height: 1; color: var(--fog); }
+    a.mini:active { transform: scale(0.99); }
+    .t-starter a.mini:active { background: var(--starter-soft); border-color: var(--starter); }
+    .t-pro a.mini:active { background: var(--pro-soft); border-color: var(--pro); }
+    .t-premium a.mini:active { background: var(--premium-soft); border-color: var(--premium); }
 
     /* ---------- Reference band (Ehso's Burger) ---------- */
     .ehso {
       background: var(--ehso-bg);
       color: #F8F8F8;
-      border-top: 0;
     }
+    .band + .ehso, .ehso + .band { border-top: 0; }
     .ehso .band__kicker { color: var(--ehso-orange); }
     .ehso h2 { color: #F8F8F8; }
     .ehso .band__sub { color: rgba(255, 255, 255, 0.7); }
@@ -321,8 +507,13 @@
       background: var(--ehso-surface);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: var(--radius);
-      padding: 1.35rem 1.15rem;
+      padding: 0.5rem 0.5rem 1.35rem;
     }
+    .ehso__grid { display: grid; gap: 1.75rem; }
+    .ehso__media { position: relative; display: block; }
+    .ehso__media .card__desk { background: #222; }
+    .ehso__media .card__phone { border-color: #000; background: #222; }
+    .ehso__text { padding-inline: 0.65rem; }
     .ehso__flag {
       display: inline-flex;
       align-items: center;
@@ -368,66 +559,131 @@
       color: #111;
       width: 100%;
     }
-    .ehso__note { font-size: 0.76rem; color: #7A7A7A; margin-top: 0.75rem; }
 
-    /* ---------- Cost drivers (accordion — one source of truth) ---------- */
-    .drivers-list { display: grid; gap: 0.6rem; }
-    details.driver {
+    /* ---------- Decision helper ---------- */
+    .decide-grid { display: grid; gap: 0.75rem; }
+    .decide {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 12px;
-      overflow: hidden;
+      border-radius: 14px;
+      padding: 1.1rem 1rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
     }
-    details.driver > summary {
-      list-style: none;
+    .decide h3 { font-size: 1rem; line-height: 1.3; }
+    .decide p { color: var(--fog); font-size: 0.86rem; flex: 1; }
+    .decide button {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-weight: 800;
+      font-size: 0.9rem;
       cursor: pointer;
-      min-height: 3rem;
+      padding: 0 0.1rem;
+      min-height: 2.75rem;
+    }
+    .decide:nth-child(1) button { color: var(--starter); }
+    .decide:nth-child(2) button { color: var(--pro); }
+    .decide:nth-child(3) button { color: var(--premium); }
+
+    /* ---------- Tables (comparison + discounts) ---------- */
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .compare table { min-width: 38rem; }
+    .discounts table { min-width: 32rem; }
+    caption {
+      caption-side: top;
+      text-align: left;
+      padding: 0.85rem 0.9rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fog);
+    }
+    th, td { text-align: left; padding: 0.75rem 0.85rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+    thead th { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fog); white-space: nowrap; }
+    thead th small { display: block; letter-spacing: 0; text-transform: none; font-size: 0.8rem; color: var(--ink); margin-top: 0.1rem; }
+    thead th.is-starter { color: var(--starter); }
+    thead th.is-pro { color: var(--pro); }
+    thead th.is-premium { color: var(--premium); }
+    /* Keep the row label pinned while the columns scroll under the thumb. */
+    tbody th[scope="row"] {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: var(--card);
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 1px 0 0 var(--line);
+    }
+    tbody th[scope="row"] small { display: block; font-weight: 600; color: var(--fog); font-size: 0.72rem; }
+    .compare td { color: var(--fog); }
+    .compare td strong { color: var(--ink); }
+    /* Phones: each criterion becomes its own block with one labelled line
+       per package, so the comparison reads top-to-bottom without swiping. */
+    @media (max-width: 743px) {
+      .compare { overflow: visible; }
+      .compare table { min-width: 0; }
+      .compare thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+      .compare tbody, .compare tr, .compare th, .compare td { display: block; }
+      .compare tr { padding-block: 0.75rem; border-bottom: 1px solid var(--line); }
+      .compare tbody tr:last-child { border-bottom: 0; }
+      .compare tbody th[scope="row"] {
+        position: static;
+        box-shadow: none;
+        border: 0;
+        padding: 0 0.9rem 0.35rem;
+        font-size: 0.95rem;
+      }
+      .compare td {
+        display: grid;
+        grid-template-columns: 6.25rem 1fr;
+        gap: 0.5rem;
+        border: 0;
+        padding: 0.3rem 0.9rem;
+        font-size: 0.85rem;
+      }
+      .compare td::before {
+        content: attr(data-label);
+        font-size: 0.66rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding-top: 0.2rem;
+      }
+      .compare td.is-starter::before { color: var(--starter); }
+      .compare td.is-pro::before { color: var(--pro); }
+      .compare td.is-premium::before { color: var(--premium); }
+    }
+    td b { display: block; font-size: 0.98rem; letter-spacing: -0.01em; }
+    td .off { font-size: 0.7rem; font-weight: 800; color: var(--premium); }
+    td.free b { color: var(--care-3); }
+    td.free .off { color: var(--care-2); }
+    .scroll-hint {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      font-weight: 700;
-      font-size: 0.92rem;
-    }
-    details.driver > summary::-webkit-details-marker { display: none; }
-    details.driver > summary::after {
-      content: "+";
-      flex: none;
-      font-size: 1.25rem;
-      font-weight: 400;
+      gap: 0.35rem;
+      font-size: 0.75rem;
       color: var(--fog);
-      transition: transform 0.2s ease;
+      margin-top: 0.5rem;
     }
-    details.driver[open] > summary::after { content: "−"; }
-    .driver__rows { border-top: 1px solid var(--line); }
-    .driver__row {
-      display: grid;
-      grid-template-columns: 7rem 1fr;
-      gap: 0.6rem;
-      padding: 0.65rem 1rem;
-      font-size: 0.85rem;
-      align-items: start;
-    }
-    .driver__row + .driver__row { border-top: 1px solid var(--line); }
-    .driver__row dt { font-weight: 800; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; padding-top: 0.15rem; }
-    .driver__row dd { color: var(--fog); }
-    .driver__row.is-starter dt { color: var(--starter); }
-    .driver__row.is-pro dt { color: var(--pro); }
-    .driver__row.is-premium dt { color: var(--premium); }
-
-    .notes { display: grid; gap: 0.75rem; margin-top: 1.25rem; }
-    .note {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 1.05rem 1rem;
-    }
-    .note h3 { font-size: 0.96rem; margin-bottom: 0.35rem; }
-    .note p { color: var(--fog); font-size: 0.86rem; }
+    .fineprint { font-size: 0.8rem; color: var(--fog); margin-top: 0.85rem; }
 
     /* ---------- Maintenance packages ---------- */
-    .care-grid { display: grid; gap: 0.85rem; }
+    .care-grid { display: grid; gap: 1.1rem; }
     .care {
       position: relative;
       background: var(--card);
@@ -482,6 +738,7 @@
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1;
+      margin-top: 0.4rem;
     }
     .care__price span { font-size: 0.85rem; font-weight: 600; color: var(--fog); letter-spacing: 0; }
     /* The plain-German sentence the customer reads while it is explained aloud. */
@@ -521,6 +778,7 @@
       border-radius: var(--radius);
       padding: 1.15rem 1rem;
       box-shadow: var(--shadow);
+      margin-bottom: 1.25rem;
     }
     .calc__label {
       font-size: 0.7rem;
@@ -597,203 +855,456 @@
       padding: 0.6rem 0.75rem;
     }
 
-    /* ---------- Discount table ---------- */
-    .table-wrap {
-      margin-top: 1.25rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--card);
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    table { width: 100%; min-width: 34rem; border-collapse: collapse; font-size: 0.82rem; }
-    caption {
-      caption-side: top;
-      text-align: left;
-      padding: 0.85rem 0.9rem 0.5rem;
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--fog);
-    }
-    th, td { text-align: left; padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
-    tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
-    thead th { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fog); white-space: nowrap; }
-    thead th:nth-child(2) { color: var(--starter); }
-    thead th:nth-child(3) { color: var(--pro); }
-    thead th:nth-child(4) { color: var(--premium); }
-    /* Keep the plan name pinned while the prices scroll under the thumb. */
-    tbody th[scope="row"] {
-      position: sticky;
-      left: 0;
-      background: var(--card);
-      font-weight: 800;
-      white-space: nowrap;
-      box-shadow: 1px 0 0 var(--line);
-    }
-    tbody th[scope="row"] small { display: block; font-weight: 600; color: var(--fog); font-size: 0.72rem; }
-    td b { display: block; font-size: 0.95rem; letter-spacing: -0.01em; }
-    td .off { font-size: 0.7rem; font-weight: 800; color: var(--premium); }
-    td.free b { color: var(--care-3); }
-    td.free .off { color: var(--care-2); }
-    .scroll-hint { font-size: 0.75rem; color: var(--fog); margin-top: 0.5rem; }
-    .fineprint { font-size: 0.8rem; color: var(--fog); margin-top: 0.85rem; }
-
-    /* ---------- Decision helper ---------- */
-    .decide-grid { display: grid; gap: 0.75rem; }
-    .decide {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 1.05rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-    }
-    .decide h3 { font-size: 0.98rem; line-height: 1.3; }
-    .decide p { color: var(--fog); font-size: 0.86rem; flex: 1; }
-    .decide button {
-      align-self: flex-start;
-      border: 0;
-      background: transparent;
-      font: inherit;
-      font-weight: 800;
-      font-size: 0.88rem;
-      cursor: pointer;
-      padding: 0.5rem 0;
-      min-height: 2.5rem;
-    }
-    .decide:nth-child(1) button { color: var(--starter); }
-    .decide:nth-child(2) button { color: var(--pro); }
-    .decide:nth-child(3) button { color: var(--premium); }
-
-    /* ---------- PDF handout ---------- */
-    .handout__card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 1.15rem 1rem;
-    }
-    .handout__card p { color: var(--fog); font-size: 0.88rem; margin-bottom: 1rem; }
-    .handout__card .btn { width: 100%; }
-    /* iOS Safari will not reliably render a PDF inside an iframe, so the
-       preview is desktop-only and the button is the primary path. */
-    .handout__preview { display: none; }
-
     footer {
       padding-block: 2rem 2.5rem;
-      padding-bottom: max(2.5rem, calc(env(safe-area-inset-bottom) + 2rem));
       color: var(--fog);
       font-size: 0.8rem;
+      border-top: 1px solid var(--line);
     }
+
+    /* ---------- Full-screen demo viewer ----------
+       Demos open here instead of in a new tab, so the customer never
+       leaves the showcase and "back" always returns to it. */
+    .viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      background: var(--night);
+      color: #fff;
+      overscroll-behavior: contain;
+    }
+    .viewer[hidden] { display: none; }
+    .viewer__bar {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      min-height: calc(3.5rem + env(safe-area-inset-top));
+      padding: env(safe-area-inset-top) max(0.35rem, env(safe-area-inset-right)) 0 max(0.35rem, env(safe-area-inset-left));
+    }
+    .vbtn {
+      flex: none;
+      width: 2.75rem;
+      height: 2.75rem;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+    .vbtn:active { background: rgba(255, 255, 255, 0.16); }
+    .vbtn--close { background: rgba(255, 255, 255, 0.1); }
+    .viewer__meta {
+      flex: 1;
+      min-width: 0;
+      padding-inline: 0.5rem;
+      display: grid;
+      gap: 0.1rem;
+    }
+    .viewer__title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .viewer__sub {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.6);
+      white-space: nowrap;
+    }
+    .viewer__sub .badge { padding: 0.12rem 0.5rem; font-size: 0.58rem; }
+    .viewer__stage {
+      position: relative;
+      flex: 1;
+      background: #fff;
+      overflow: hidden;
+    }
+    .viewer__stage iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+    .viewer__loading {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 0.9rem;
+      background: var(--night);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .viewer.is-loading .viewer__loading { opacity: 1; }
+    .spinner {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.18);
+      border-top-color: var(--premium);
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    html.viewer-open { overflow: hidden; }
 
     /* ===================================================================
        Wider screens
        =================================================================== */
     @media (min-width: 640px) {
       .band { padding-block: 3.25rem; }
-      .care-grid { grid-template-columns: repeat(3, 1fr); }
-      .notes { grid-template-columns: repeat(3, 1fr); }
-      .decide-grid { grid-template-columns: repeat(3, 1fr); }
-      .tier { padding: 1.6rem 1.4rem; }
       .ehso .btn { width: auto; }
-      .handout__card .btn { width: auto; }
       .calc__rows { grid-template-columns: repeat(3, 1fr); }
       .calc__row { flex-direction: column; align-items: flex-start; gap: 0.35rem; }
       .calc__right { text-align: left; }
-      table { min-width: 0; }
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* iPad mini portrait and up: sticky top bar with section links
+       replaces the bottom tab bar. */
+    @media (min-width: 744px) {
+      body { padding-bottom: 0; }
+      .tabbar { display: none; }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      section { scroll-margin-top: calc(var(--topbar-h) + env(safe-area-inset-top) + 0.75rem); }
+      .topnav { display: flex; gap: 0.15rem; }
+      .topnav a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.75rem;
+        padding: 0 0.7rem;
+        border-radius: 999px;
+        color: var(--fog);
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: color 0.18s ease, background 0.18s ease;
+      }
+      .topnav a.is-active { color: var(--ink); background: rgba(16, 21, 28, 0.07); }
+      .hero { padding-block: 2.75rem 3.25rem; }
+      .seg { max-width: 36rem; }
+      .care-grid { grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
+      .decide-grid { grid-template-columns: repeat(3, 1fr); }
+      .tier { padding: 1.6rem 1.4rem; }
+      .ehso__grid { grid-template-columns: 1.15fr 1fr; align-items: center; }
+      .ehso__card { padding: 1rem; }
+      .ehso__text { padding-inline: 0 0.5rem; }
+      .compare table, .discounts table { min-width: 0; }
       tbody th[scope="row"] { position: static; box-shadow: none; }
       .scroll-hint { display: none; }
     }
 
     @media (min-width: 900px) {
       .band { padding-block: 4rem; }
-      .drivers-list { grid-template-columns: repeat(2, 1fr); align-items: start; }
-      .ehso__grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem; align-items: center; }
+      .hero { grid-template-columns: 1fr 1fr; align-items: center; gap: 2.5rem; }
       /* Tabs are a small-screen affordance. With room for three columns the
          customer should see all three packages at once, so the switcher goes
          away and the JS below stops hiding panels. */
-      .tabs { display: none; }
-      .tiers { grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+      .tiers-tabs { display: none; }
+      .tiers { grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
     }
 
     @media (min-width: 1024px) {
-      .handout__preview {
-        display: block;
-        width: 100%;
-        min-height: 680px;
-        margin-top: 1.25rem;
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-      }
+      .gallery { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
     }
 
     /* Hover states only where a real pointer exists — on touch they stick. */
     @media (hover: hover) {
-      .btn:hover { opacity: 0.92; }
-      .jump a:hover { color: var(--ink); border-color: var(--ink); }
-      a.demo:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-      .t-starter a.demo:hover { background: var(--starter-soft); }
-      .t-pro a.demo:hover { background: var(--pro-soft); }
-      .t-premium a.demo:hover { background: var(--premium-soft); }
-      .tabs button:hover { color: var(--ink); }
+      .btn:hover { opacity: 0.9; }
+      .topnav a:hover { color: var(--ink); }
+      .card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+      a.mini:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+      .t-starter a.mini:hover { background: var(--starter-soft); }
+      .t-pro a.mini:hover { background: var(--pro-soft); }
+      .t-premium a.mini:hover { background: var(--premium-soft); }
+      .seg button:hover { color: var(--ink); }
       .decide button:hover { text-decoration: underline; }
+      .vbtn:hover { background: rgba(255, 255, 255, 0.16); }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
     }
-
-    html { scroll-behavior: smooth; }
   </style>
 </head>
 <body>
 
+  <!-- Icon sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+    <symbol id="i-percent" viewBox="0 0 24 24"><path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></symbol>
+    <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M15 7l5 5-5 5"/></symbol>
+  </svg>
+
   <header class="topbar">
     <div class="wrap topbar__inner">
-      <span class="topbar__brand">Pakete&nbsp;&amp;&nbsp;Demos</span>
-      <nav class="jump" aria-label="Abschnitte">
-        <a href="#pakete">Pakete</a>
+      <a class="brand" href="#top"><span class="brand__mark" aria-hidden="true"><i></i></span>Website-Pakete</a>
+      <nav class="topnav" aria-label="Abschnitte">
+        <a href="#demos">Demos</a>
         <a href="#referenz">Referenz</a>
+        <a href="#pakete">Pakete</a>
+        <a href="#vergleich">Vergleich</a>
         <a href="#wartung">Wartung</a>
         <a href="#rabatte">Rabatte</a>
-        <a href="#preisunterschied">Preisunterschied</a>
-        <a href="#leitfaden">PDF</a>
       </nav>
     </div>
   </header>
 
-  <main>
+  <main id="top">
 
     <!-- ============================================================
          HERO
          ============================================================ -->
-    <section class="wrap hero">
-      <h1>Drei Pakete.<br>Neun Demos.<br>Ein echtes Projekt.</h1>
-      <p>
-        Jede Demo zeigt den vollen Funktionsumfang eines Pakets, umgesetzt für eine typische
-        Hamburger Branche. Dazu die Wartungspakete und die Kombi-Rabatte – alles auf einer Seite.
-      </p>
-      <div class="hero__cta">
-        <a class="btn" href="#pakete">Pakete ansehen</a>
-        <a class="btn btn--ghost" href="#rabatte">Rabatt-Rechner</a>
+    <section class="wrap hero" id="start">
+      <div>
+        <h1>Drei Pakete.<br>Neun Demos.<br><em>Ein echtes Projekt.</em></h1>
+        <p>
+          Jede Demo ist eine vollständige, klickbare Website für eine typische Hamburger
+          Branche. Einfach antippen – sie öffnet sich im Vollbild.
+        </p>
+        <div class="hero__cta">
+          <a class="btn" href="#demos">Demos ansehen</a>
+          <a class="btn btn--ghost" href="#pakete">Pakete &amp; Preise</a>
+        </div>
+        <ul class="facts">
+          <li><b>9</b> Demos zum Ausprobieren</li>
+          <li>ab <b>1.000&nbsp;€</b> einmalig</li>
+          <li>mit Wartung ab <b>0&nbsp;€</b></li>
+        </ul>
+      </div>
+      <div class="hero__art" aria-hidden="true">
+        <img src="assets/thumbs/gastro-basic-desktop.webp" width="960" height="600" alt="">
+        <img src="assets/thumbs/aviation-premium-desktop.webp" width="960" height="600" alt="">
+        <img src="assets/thumbs/maritim-premium-desktop.webp" width="960" height="600" alt="">
+        <img class="hero__phone" src="assets/thumbs/zahnarzt-professional-phone.webp" width="260" height="563" alt="">
+      </div>
+    </section>
+
+    <!-- ============================================================
+         DEMO GALLERY
+         Every [data-demo] link opens the full-screen viewer. The first
+         link per slug in document order defines the viewer's sequence and
+         carries its name/tier; without JS the links simply navigate.
+         ============================================================ -->
+    <section class="band" id="demos" data-tab="demos">
+      <div class="wrap">
+        <div class="band__head">
+          <span class="band__kicker">Demos</span>
+          <h2>Klicken Sie sich durch</h2>
+          <p class="band__sub">
+            Jede Demo zeigt den vollen Funktionsumfang ihres Pakets. Mit den Pfeilen oben
+            im Vollbild wechseln Sie direkt zur nächsten.
+          </p>
+        </div>
+
+        <div class="seg" role="group" aria-label="Demos nach Paket filtern">
+          <button type="button" data-filter="all" aria-pressed="true">Alle</button>
+          <button type="button" data-filter="starter" aria-pressed="false">Starter</button>
+          <button type="button" data-filter="pro" aria-pressed="false">Professional</button>
+          <button type="button" data-filter="premium" aria-pressed="false">Premium</button>
+        </div>
+
+        <div class="gallery">
+          <a class="card" href="gastro-basic/index.html" data-demo="gastro-basic" data-tier="starter" data-name="Röstwerk Ottensen">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/gastro-basic-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/gastro-basic-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--starter">Starter · 1.000&nbsp;€</span>
+              <strong class="card__name">Röstwerk Ottensen</strong>
+              <span class="card__sector">Café &amp; Rösterei · Speisekarte, Galerie, Kontakt</span>
+            </div>
+          </a>
+          <a class="card" href="friseur-basic/index.html" data-demo="friseur-basic" data-tier="starter" data-name="Haarwerk Winterhude">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/friseur-basic-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/friseur-basic-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--starter">Starter · 1.000&nbsp;€</span>
+              <strong class="card__name">Haarwerk Winterhude</strong>
+              <span class="card__sector">Friseursalon · Preisliste, Team, Terminanfrage</span>
+            </div>
+          </a>
+          <a class="card" href="tischlerei-basic/index.html" data-demo="tischlerei-basic" data-tier="starter" data-name="Tischlerei Holtkamp">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/tischlerei-basic-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/tischlerei-basic-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--starter">Starter · 1.000&nbsp;€</span>
+              <strong class="card__name">Tischlerei Holtkamp</strong>
+              <span class="card__sector">Handwerk · Leistungen, Referenzen, Projektanfrage</span>
+            </div>
+          </a>
+          <a class="card" href="immobilien-professional/index.html" data-demo="immobilien-professional" data-tier="pro" data-name="Elbstein Immobilien">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/immobilien-professional-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/immobilien-professional-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--pro">Professional · 1.750&nbsp;€</span>
+              <strong class="card__name">Elbstein Immobilien</strong>
+              <span class="card__sector">Makler · Objektfilter, Zähler, Google-Profil</span>
+            </div>
+          </a>
+          <a class="card" href="zahnarzt-professional/index.html" data-demo="zahnarzt-professional" data-tier="pro" data-name="Elbzahn Eppendorf">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/zahnarzt-professional-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/zahnarzt-professional-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--pro">Professional · 1.750&nbsp;€</span>
+              <strong class="card__name">Elbzahn Eppendorf</strong>
+              <span class="card__sector">Zahnarztpraxis · Behandlungs-Timeline, FAQ, Rezensionen</span>
+            </div>
+          </a>
+          <a class="card" href="architektur-professional/index.html" data-demo="architektur-professional" data-tier="pro" data-name="Fleetwerk Architekten">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/architektur-professional-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/architektur-professional-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--pro">Professional · 1.750&nbsp;€</span>
+              <strong class="card__name">Fleetwerk Architekten</strong>
+              <span class="card__sector">Architekturbüro · Projektfilter, Leistungsphasen, editorialer Look</span>
+            </div>
+          </a>
+          <a class="card" href="maritim-premium/index.html" data-demo="maritim-premium" data-tier="premium" data-name="Nordmeridian Logistik">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/maritim-premium-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/maritim-premium-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--premium">Premium · 2.750&nbsp;€</span>
+              <strong class="card__name">Nordmeridian Logistik</strong>
+              <span class="card__sector">Spedition · 3D-Globus zum Drehen, Sendung als Scroll-Story</span>
+            </div>
+          </a>
+          <a class="card" href="windenergie-premium/index.html" data-demo="windenergie-premium" data-tier="premium" data-name="Elbwind Offshore">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/windenergie-premium-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/windenergie-premium-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--premium">Premium · 2.750&nbsp;€</span>
+              <strong class="card__name">Elbwind Offshore</strong>
+              <span class="card__sector">Windenergie · Böen per Fingertipp, Drohnen-Inspektion als Scroll-Story</span>
+            </div>
+          </a>
+          <a class="card" href="aviation-premium/index.html" data-demo="aviation-premium" data-tier="premium" data-name="Hanseatic Aerotec">
+            <div class="card__media">
+              <img class="card__desk" src="assets/thumbs/aviation-premium-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <img class="card__phone" src="assets/thumbs/aviation-premium-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live-Demo</span>
+            </div>
+            <div class="card__body">
+              <span class="badge badge--premium">Premium · 2.750&nbsp;€</span>
+              <strong class="card__name">Hanseatic Aerotec</strong>
+              <span class="card__sector">Luftfahrt · Messkreuz im Hero, vom Bauteil zum Erstmuster</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         REFERENCE — real client project, outside the tier system
+         ============================================================ -->
+    <section class="band ehso" id="referenz" data-tab="demos">
+      <div class="wrap">
+        <div class="band__head">
+          <span class="band__kicker">Referenz · Individualprojekt</span>
+          <h2>Wenn ein Paket nicht reicht</h2>
+          <p class="band__sub">
+            Keine Demo, sondern ein echtes Kundenprojekt. Solche Projekte laufen
+            außerhalb der drei Pakete.
+          </p>
+        </div>
+
+        <div class="ehso__card">
+          <div class="ehso__grid">
+            <a class="ehso__media" href="ehsos-referenz/index.html" data-demo="ehsos-referenz" data-tier="ref" data-name="Ehso's Burger">
+              <img class="card__desk" src="assets/thumbs/ehsos-referenz-desktop.webp" width="960" height="600" loading="lazy" alt="Startseite von Ehso's Burger">
+              <img class="card__phone" src="assets/thumbs/ehsos-referenz-phone.webp" width="260" height="563" loading="lazy" alt="">
+              <span class="card__play"><svg class="ico"><use href="#i-play"/></svg>Live ansehen</span>
+            </a>
+            <div class="ehso__text">
+              <span class="ehso__flag">Echtes Kundenprojekt</span>
+              <p class="ehso__name">EHSO'S&nbsp;<span>BURGER</span></p>
+              <p class="ehso__price">
+                Individuell · Preis auf Anfrage
+                <small>Eigener Umfang, eigene Kalkulation – nicht mit den Paketen vergleichbar.</small>
+              </p>
+              <p class="ehso__body">
+                Burger-Restaurant in Hamburg Lurup mit mehreren Standorten. Keine klassische
+                Website, sondern eine Applikation:
+              </p>
+              <ul class="ehso__list">
+                <li>Speisekarte mit über 50 Positionen, Allergenen und Bildern</li>
+                <li>Bestellung über Lieferando, Wolt und Uber&nbsp;Eats</li>
+                <li>Drei Standorte mit Öffnungszeiten-Logik und Karte</li>
+                <li>Animierter WebGL-Hintergrund und flüssige Bewegung</li>
+                <li>DSGVO-Cookie-Banner mit Google Consent Mode v2</li>
+              </ul>
+              <a class="btn" href="ehsos-referenz/index.html" data-demo="ehsos-referenz">Referenz öffnen</a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ============================================================
          PACKAGES
          ============================================================ -->
-    <section class="band" id="pakete">
+    <section class="band" id="pakete" data-tab="pakete">
       <div class="wrap">
         <div class="band__head">
           <span class="band__kicker">Website-Pakete</span>
-          <h2>Was kostet was – und warum</h2>
-          <p class="band__sub">Paket wählen, dann eine der drei Demos öffnen – jede ist voll klickbar.</p>
+          <h2>Was kostet was</h2>
+          <p class="band__sub">Einmaliger Preis, plus ein Wartungspaket nach Wahl – das die Website deutlich günstiger macht.</p>
         </div>
 
-        <div class="tabs" role="tablist" aria-label="Website-Pakete">
+        <div class="seg tiers-tabs" role="tablist" aria-label="Website-Pakete">
           <button type="button" role="tab" id="tab-starter" data-tier="starter"
                   aria-controls="panel-starter" aria-selected="true">Starter</button>
           <button type="button" role="tab" id="tab-pro" data-tier="pro"
@@ -811,9 +1322,9 @@
           </div>
           <p class="tier__pitch">
             Für kleine Betriebe, die professionell gefunden werden wollen: eine Seite,
-            die alles Wichtige sagt – schnell, sauber, responsiv.
+            die alles Wichtige sagt – schnell, sauber, auf jedem Gerät.
           </p>
-          <ul class="tier__features">
+          <ul class="ticks">
             <li>One-Pager, voll responsiv</li>
             <li>Kontaktformular mit Validierung</li>
             <li>Basis-SEO (Title, Description, Canonical)</li>
@@ -822,24 +1333,18 @@
             <li>2 Revisionsrunden</li>
           </ul>
           <div class="tier__demos">
-            <span class="tier__demos-label">3 Demos ansehen</span>
-            <a class="demo" href="gastro-basic/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Röstwerk Ottensen</strong>
-                <span>Café &amp; Rösterei · Speisekarte, Galerie, Kontakt</span>
-              </div>
+            <span class="tier__demos-label">Demos dieses Pakets</span>
+            <a class="mini" href="gastro-basic/index.html" data-demo="gastro-basic">
+              <img src="assets/thumbs/gastro-basic-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Röstwerk Ottensen</strong><small>Café &amp; Rösterei</small></span>
             </a>
-            <a class="demo" href="friseur-basic/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Haarwerk Winterhude</strong>
-                <span>Friseursalon · Preisliste, Team, Terminanfrage</span>
-              </div>
+            <a class="mini" href="friseur-basic/index.html" data-demo="friseur-basic">
+              <img src="assets/thumbs/friseur-basic-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Haarwerk Winterhude</strong><small>Friseursalon</small></span>
             </a>
-            <a class="demo" href="tischlerei-basic/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Tischlerei Holtkamp</strong>
-                <span>Handwerk · Leistungen, Referenzen, Projektanfrage</span>
-              </div>
+            <a class="mini" href="tischlerei-basic/index.html" data-demo="tischlerei-basic">
+              <img src="assets/thumbs/tischlerei-basic-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Tischlerei Holtkamp</strong><small>Handwerk</small></span>
             </a>
           </div>
         </section>
@@ -854,7 +1359,7 @@
             Für Unternehmen, die Vertrauen verkaufen: mehrere Seiten, spürbare Bewegung
             und SEO, das über Meta-Tags hinausgeht.
           </p>
-          <ul class="tier__features">
+          <ul class="ticks">
             <li class="plus">Alles aus Starter, plus:</li>
             <li>Bis zu 5 individuelle Seiten</li>
             <li>Scroll-Animationen, Zähler, Timelines</li>
@@ -864,24 +1369,18 @@
             <li>Unbegrenzte Revisionen</li>
           </ul>
           <div class="tier__demos">
-            <span class="tier__demos-label">3 Demos ansehen</span>
-            <a class="demo" href="immobilien-professional/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Elbstein Immobilien</strong>
-                <span>Makler · Objektfilter, Zähler, GBP-Callout</span>
-              </div>
+            <span class="tier__demos-label">Demos dieses Pakets</span>
+            <a class="mini" href="immobilien-professional/index.html" data-demo="immobilien-professional">
+              <img src="assets/thumbs/immobilien-professional-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Elbstein Immobilien</strong><small>Makler</small></span>
             </a>
-            <a class="demo" href="zahnarzt-professional/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Elbzahn Eppendorf</strong>
-                <span>Zahnarztpraxis · Behandlungs-Timeline, FAQ, Rezensionen</span>
-              </div>
+            <a class="mini" href="zahnarzt-professional/index.html" data-demo="zahnarzt-professional">
+              <img src="assets/thumbs/zahnarzt-professional-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Elbzahn Eppendorf</strong><small>Zahnarztpraxis</small></span>
             </a>
-            <a class="demo" href="architektur-professional/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Fleetwerk Architekten</strong>
-                <span>Architekturbüro · Projektfilter, HOAI-Timeline, editorialer Look</span>
-              </div>
+            <a class="mini" href="architektur-professional/index.html" data-demo="architektur-professional">
+              <img src="assets/thumbs/architektur-professional-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Fleetwerk Architekten</strong><small>Architekturbüro</small></span>
             </a>
           </div>
         </section>
@@ -893,37 +1392,32 @@
             <p class="tier__price">2.750&nbsp;€ <small>einmalig · zzgl. Wartung</small></p>
           </div>
           <p class="tier__pitch">
-            Für Unternehmen, die Differenzierung kaufen: eigenes Designsystem, eine
-            individuell entwickelte interaktive Erfahrung und Texte vom Profi. Deshalb drei
-            völlig verschiedene Layout-Systeme – Premium heißt: kein Raster von der Stange.
+            Für Unternehmen, die sich abheben wollen: eigenes Designsystem, eine
+            individuell entwickelte interaktive Erfahrung und Texte vom Profi – kein Raster
+            von der Stange.
           </p>
-          <ul class="tier__features">
+          <ul class="ticks">
             <li class="plus">Alles aus Professional, plus:</li>
             <li>Individuelle 3D-/Canvas-Erfahrung (eigens programmiert)</li>
+            <li>Seitenübergänge, Scroll-Storys &amp; interaktive Effekte</li>
             <li>Volle Art Direction: eigenes Farb-, Schrift- &amp; Komponentensystem</li>
             <li>Professionelles Copywriting inklusive</li>
             <li>Performance-Engineering (pausiert offscreen, reduced-motion)</li>
             <li>Priority Support &amp; begleiteter Launch</li>
           </ul>
           <div class="tier__demos">
-            <span class="tier__demos-label">3 Demos ansehen</span>
-            <a class="demo" href="maritim-premium/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Nordmeridian Logistik</strong>
-                <span>Spedition · 3D-Globus, dunkelblaue Dramaturgie</span>
-              </div>
+            <span class="tier__demos-label">Demos dieses Pakets</span>
+            <a class="mini" href="maritim-premium/index.html" data-demo="maritim-premium">
+              <img src="assets/thumbs/maritim-premium-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Nordmeridian Logistik</strong><small>Spedition</small></span>
             </a>
-            <a class="demo" href="windenergie-premium/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Elbwind Offshore</strong>
-                <span>Windenergie · Leitwarten-Layout mit Live-Telemetrie</span>
-              </div>
+            <a class="mini" href="windenergie-premium/index.html" data-demo="windenergie-premium">
+              <img src="assets/thumbs/windenergie-premium-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Elbwind Offshore</strong><small>Windenergie</small></span>
             </a>
-            <a class="demo" href="aviation-premium/index.html" target="_blank" rel="noopener">
-              <div>
-                <strong>Hanseatic Aerotec</strong>
-                <span>Luftfahrt · Technische-Zeichnung-Layout, hell</span>
-              </div>
+            <a class="mini" href="aviation-premium/index.html" data-demo="aviation-premium">
+              <img src="assets/thumbs/aviation-premium-desktop.webp" width="960" height="600" loading="lazy" alt="">
+              <span><strong>Hanseatic Aerotec</strong><small>Luftfahrt</small></span>
             </a>
           </div>
         </section>
@@ -932,52 +1426,100 @@
     </section>
 
     <!-- ============================================================
-         REFERENCE — real client project, outside the tier system
+         DECISION HELPER
          ============================================================ -->
-    <section class="band ehso" id="referenz">
+    <section class="band" id="entscheidung" data-tab="pakete">
       <div class="wrap">
         <div class="band__head">
-          <span class="band__kicker">Referenz · Individualprojekt</span>
-          <h2>Wenn ein Paket nicht reicht</h2>
+          <span class="band__kicker">Entscheidungshilfe</span>
+          <h2>Welches Paket passt?</h2>
+        </div>
+        <div class="decide-grid">
+          <article class="decide">
+            <h3>„Ich muss erst einmal gefunden werden.“</h3>
+            <p>Kleiner Betrieb, klare Leistung, Laufkundschaft oder Empfehlung – die Website
+              muss seriös aussehen, schnell laden und Anfragen annehmen. Mehr nicht.</p>
+            <button type="button" data-goto="starter">→ Starter ansehen</button>
+          </article>
+          <article class="decide">
+            <h3>„Ich verkaufe Vertrauen – und Google entscheidet mit.“</h3>
+            <p>Kund:innen vergleichen Sie mit Wettbewerbern, lesen Rezensionen und wollen Team,
+              Leistungen und Referenzen sehen. Sichtbarkeit und Auftritt müssen mitspielen.</p>
+            <button type="button" data-goto="pro">→ Professional ansehen</button>
+          </article>
+          <article class="decide">
+            <h3>„Ich will aussehen wie der Marktführer.“</h3>
+            <p>B2B, hohe Auftragswerte, konservative Branche: Die Website ist Ihr stärkstes
+              Verkaufsargument, bevor jemand anruft. Differenzierung ist das Ziel.</p>
+            <button type="button" data-goto="premium">→ Premium ansehen</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         COMPARISON — why the prices differ
+         ============================================================ -->
+    <section class="band" id="vergleich" data-tab="pakete">
+      <div class="wrap">
+        <div class="band__head">
+          <span class="band__kicker">Vergleich</span>
+          <h2>Was unterscheidet die Pakete?</h2>
           <p class="band__sub">
-            Keine Demo, sondern ein echtes Kundenprojekt – gebaut, bevor es die Pakete gab.
-            Solche Projekte laufen außerhalb der drei Stufen.
+            Nicht „mehr Design-Geschmack“, sondern messbar mehr Arbeit – jede Zeile können
+            Sie in den Demos selbst ausprobieren.
           </p>
         </div>
 
-        <div class="ehso__card">
-          <div class="ehso__grid">
-            <div>
-              <span class="ehso__flag">Echtes Kundenprojekt</span>
-              <p class="ehso__name">EHSO'S&nbsp;<span>BURGER</span></p>
-              <p class="ehso__price">
-                Individuell · Preis auf Anfrage
-                <small>Nicht mit Starter/Professional/Premium vergleichbar – eigener Umfang, eigene Kalkulation.</small>
-              </p>
-              <p class="ehso__body">
-                Burger-Restaurant in Hamburg Lurup, mit weiteren Standorten. Keine klassische
-                Website, sondern eine Applikation: eigene Speisekarten-Datenbasis mit
-                Allergenkennzeichnung, Bestellwege zu drei Lieferdiensten und ein eigener
-                Standort-Bereich.
-              </p>
-            </div>
-            <div>
-              <ul class="ehso__list">
-                <li>React-Applikation mit eigenem Routing statt statischer Seiten</li>
-                <li>Animierter WebGL-Hintergrund, GSAP-Bewegung, Smooth-Scrolling</li>
-                <li>Speisekarte mit über 50 Positionen, Allergenen und Bildern</li>
-                <li>Bestellung über Lieferando, Wolt und Uber&nbsp;Eats</li>
-                <li>Drei Standorte inkl. Öffnungszeiten-Logik und Kartenanbindung</li>
-                <li>DSGVO-Cookie-Banner mit Google Consent Mode v2</li>
-                <li>JSON-LD <em>Restaurant</em>, Open Graph, eigene Bild-Optimierungspipeline</li>
-              </ul>
-              <a class="btn" href="ehsos-referenz/index.html" target="_blank" rel="noopener">Referenz öffnen</a>
-              <p class="ehso__note">
-                Offline-Kopie des ausgelieferten Standes. Analytics entfernt, damit die
-                Vorführung keine Daten des Kunden verfälscht.
-              </p>
-            </div>
-          </div>
+        <div class="table-wrap compare">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"><span class="sr-only">Merkmal</span></th>
+                <th scope="col" class="is-starter">Starter<small>1.000&nbsp;€</small></th>
+                <th scope="col" class="is-pro">Professional<small>1.750&nbsp;€</small></th>
+                <th scope="col" class="is-premium">Premium<small>2.750&nbsp;€</small></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Umfang</th>
+                <td class="is-starter" data-label="Starter"><span><strong>1 Seite</strong></span></td>
+                <td class="is-pro" data-label="Professional"><span><strong>5 Seiten</strong> + Sitemap</span></td>
+                <td class="is-premium" data-label="Premium"><span><strong>5 Seiten</strong> + Sitemap</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Bewegung</th>
+                <td class="is-starter" data-label="Starter"><span>Hover-Effekte</span></td>
+                <td class="is-pro" data-label="Professional"><span>Scroll-Animationen, Zähler, Timelines, Filter</span></td>
+                <td class="is-premium" data-label="Premium"><span>+ <strong>eigens programmierte 3D-/Canvas-Erfahrung</strong>, Seitenübergänge, Scroll-Storys</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Google&nbsp;/ SEO</th>
+                <td class="is-starter" data-label="Starter"><span>Meta-Tags</span></td>
+                <td class="is-pro" data-label="Professional"><span>+ JSON-LD, Open Graph, sitemap.xml, <strong>Google Business Profile</strong></span></td>
+                <td class="is-premium" data-label="Premium"><span>wie Professional</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Design</th>
+                <td class="is-starter" data-label="Starter"><span>Sauberes Template-Niveau</span></td>
+                <td class="is-pro" data-label="Professional"><span>Kuratierte Typografie &amp; Farbwelt</span></td>
+                <td class="is-premium" data-label="Premium"><span><strong>Eigenes Designsystem</strong> (Farben, Schriften, Komponenten)</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Texte</th>
+                <td class="is-starter" data-label="Starter"><span>von Ihnen</span></td>
+                <td class="is-pro" data-label="Professional"><span>von Ihnen</span></td>
+                <td class="is-premium" data-label="Premium"><span><strong>Profi-Copywriting</strong> inklusive</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Betreuung</th>
+                <td class="is-starter" data-label="Starter"><span>2 Revisionsrunden</span></td>
+                <td class="is-pro" data-label="Professional"><span><strong>Unbegrenzte</strong> Revisionen</span></td>
+                <td class="is-premium" data-label="Premium"><span>Priority Support &amp; <strong>begleiteter Launch</strong></span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -985,13 +1527,13 @@
     <!-- ============================================================
          MAINTENANCE PACKAGES
          ============================================================ -->
-    <section class="band" id="wartung">
+    <section class="band" id="wartung" data-tab="wartung">
       <div class="wrap">
         <div class="band__head">
           <span class="band__kicker">Wartung &amp; Betreuung</span>
           <h2>Die Website bleibt gepflegt</h2>
           <p class="band__sub">
-            Die Wartung ist die wichtigste Absicherung. Ohne Wartung: Die Seite kann
+            Die Wartung ist die wichtigste Absicherung. Ohne Wartung kann die Seite
             abstürzen, gehackt werden oder veralten. Mit Wartung: rundum sorglos.
           </p>
         </div>
@@ -1078,7 +1620,7 @@
     <!-- ============================================================
          COMBINATION DISCOUNTS
          ============================================================ -->
-    <section class="band" id="rabatte">
+    <section class="band" id="rabatte" data-tab="rabatte">
       <div class="wrap">
         <div class="band__head">
           <span class="band__kicker">Kombi-Rabatte</span>
@@ -1107,15 +1649,15 @@
           <p class="calc__saving" id="calc-saving"></p>
         </div>
 
-        <div class="table-wrap">
+        <div class="table-wrap discounts">
           <table>
             <caption>Alle Kombinationen</caption>
             <thead>
               <tr>
                 <th scope="col">Wartung</th>
-                <th scope="col">Starter<br>1.000&nbsp;€</th>
-                <th scope="col">Professional<br>1.750&nbsp;€</th>
-                <th scope="col">Premium<br>2.750&nbsp;€</th>
+                <th scope="col" class="is-starter">Starter<small>1.000&nbsp;€</small></th>
+                <th scope="col" class="is-pro">Professional<small>1.750&nbsp;€</small></th>
+                <th scope="col" class="is-premium">Premium<small>2.750&nbsp;€</small></th>
               </tr>
             </thead>
             <tbody>
@@ -1140,7 +1682,7 @@
             </tbody>
           </table>
         </div>
-        <p class="scroll-hint">Tabelle seitlich wischen →</p>
+        <p class="scroll-hint"><svg class="ico" aria-hidden="true"><use href="#i-swipe"/></svg>Tabelle seitlich wischen</p>
         <p class="fineprint">
           Rabatt gilt bei 24 Monaten Mindestlaufzeit des Wartungsvertrags.
           Danach monatlich kündbar. Endpreise auf volle 250&nbsp;€ abgerundet –
@@ -1149,171 +1691,64 @@
       </div>
     </section>
 
-    <!-- ============================================================
-         DECISION HELPER
-         ============================================================ -->
-    <section class="band" id="entscheidung">
-      <div class="wrap">
-        <div class="band__head">
-          <span class="band__kicker">Entscheidungshilfe</span>
-          <h2>Unsicher? Drei Fragen genügen.</h2>
-        </div>
-        <div class="decide-grid">
-          <article class="decide">
-            <h3>„Ich muss erst einmal gefunden werden.“</h3>
-            <p>Kleiner Betrieb, klare Leistung, Laufkundschaft oder Empfehlung – die Website
-              muss seriös aussehen, schnell laden und Anfragen annehmen. Mehr nicht.</p>
-            <button type="button" data-goto="starter">→ Starter ansehen</button>
-          </article>
-          <article class="decide">
-            <h3>„Ich verkaufe Vertrauen – und Google entscheidet mit.“</h3>
-            <p>Kund:innen vergleichen Sie mit Wettbewerbern, lesen Rezensionen und wollen Team,
-              Leistungen und Referenzen sehen. Sichtbarkeit und Auftritt müssen mitspielen.</p>
-            <button type="button" data-goto="pro">→ Professional ansehen</button>
-          </article>
-          <article class="decide">
-            <h3>„Ich will aussehen wie der Marktführer.“</h3>
-            <p>B2B, hohe Auftragswerte, konservative Branche: Die Website ist Ihr stärkstes
-              Verkaufsargument, bevor jemand anruft. Differenzierung ist das Ziel.</p>
-            <button type="button" data-goto="premium">→ Premium ansehen</button>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         WHY THE PRICE DIFFERENCE
-         ============================================================ -->
-    <section class="band" id="preisunterschied">
-      <div class="wrap">
-        <div class="band__head">
-          <span class="band__kicker">Kostentreiber</span>
-          <h2>Warum kostet Premium mehr?</h2>
-          <p class="band__sub">
-            Nicht wegen „mehr Design-Geschmack“, sondern wegen messbar mehr Arbeit.
-            Jede Zeile lässt sich in den Demos direkt nachprüfen.
-          </p>
-        </div>
-
-        <div class="drivers-list">
-          <details class="driver">
-            <summary>Umfang</summary>
-            <dl class="driver__rows">
-              <div class="driver__row is-starter"><dt>Starter</dt><dd>1 Seite</dd></div>
-              <div class="driver__row is-pro"><dt>Professional</dt><dd>5 Seiten + Sitemap</dd></div>
-              <div class="driver__row is-premium"><dt>Premium</dt><dd>5 Seiten + Sitemap</dd></div>
-            </dl>
-          </details>
-
-          <details class="driver">
-            <summary>Bewegung &amp; Interaktion</summary>
-            <dl class="driver__rows">
-              <div class="driver__row is-starter"><dt>Starter</dt><dd>Nur Hover-Effekte</dd></div>
-              <div class="driver__row is-pro"><dt>Professional</dt><dd>Scroll-Reveals, animierte Zähler, Timelines, Filter</dd></div>
-              <div class="driver__row is-premium"><dt>Premium</dt><dd>Alles aus Professional + eigens programmierte Canvas-/WebGL-Erfahrung</dd></div>
-            </dl>
-          </details>
-
-          <details class="driver">
-            <summary>SEO-Tiefe</summary>
-            <dl class="driver__rows">
-              <div class="driver__row is-starter"><dt>Starter</dt><dd>Meta-Tags</dd></div>
-              <div class="driver__row is-pro"><dt>Professional</dt><dd>+ JSON-LD, Open Graph, Breadcrumbs, sitemap.xml, Google Business Profile</dd></div>
-              <div class="driver__row is-premium"><dt>Premium</dt><dd>wie Professional</dd></div>
-            </dl>
-          </details>
-
-          <details class="driver">
-            <summary>Design</summary>
-            <dl class="driver__rows">
-              <div class="driver__row is-starter"><dt>Starter</dt><dd>Sauberes Template-Niveau</dd></div>
-              <div class="driver__row is-pro"><dt>Professional</dt><dd>Kuratierte Typografie &amp; Farbwelt</dd></div>
-              <div class="driver__row is-premium"><dt>Premium</dt><dd>Komplettes eigenes Designsystem (Farben, Schriften, Komponenten)</dd></div>
-            </dl>
-          </details>
-
-          <details class="driver">
-            <summary>Inhalte</summary>
-            <dl class="driver__rows">
-              <div class="driver__row is-starter"><dt>Starter</dt><dd>Texte vom Kunden</dd></div>
-              <div class="driver__row is-pro"><dt>Professional</dt><dd>Texte vom Kunden</dd></div>
-              <div class="driver__row is-premium"><dt>Premium</dt><dd>Professionelles Copywriting inklusive</dd></div>
-            </dl>
-          </details>
-
-          <details class="driver">
-            <summary>Betreuung</summary>
-            <dl class="driver__rows">
-              <div class="driver__row is-starter"><dt>Starter</dt><dd>2 Revisionsrunden</dd></div>
-              <div class="driver__row is-pro"><dt>Professional</dt><dd>Unbegrenzte Revisionen</dd></div>
-              <div class="driver__row is-premium"><dt>Premium</dt><dd>Priority Support &amp; begleiteter Launch</dd></div>
-            </dl>
-          </details>
-        </div>
-
-        <div class="notes">
-          <article class="note">
-            <h3>Starter = 1 Baustelle</h3>
-            <p>Eine Seite, ein Formular, ein Design-Durchlauf. Der Aufwand ist klar begrenzt.
-              Vergleichen Sie: Die Starter-Demos haben bewusst <em>keine</em> Scroll-Animationen
-              und kein strukturiertes SEO-Markup.</p>
-          </article>
-          <article class="note">
-            <h3>Professional = 5 Baustellen + Sichtbarkeit</h3>
-            <p>Fünfmal Inhalt, Navigation und Motion-Feinschliff – plus SEO-Arbeit, die Google
-              wirklich liest, und ein eingerichtetes Google Business Profile. Scrollen Sie durch
-              Elbzahn oder Fleetwerk: Alles bewegt sich, alles ist verlinkbar.</p>
-          </article>
-          <article class="note">
-            <h3>Premium = Individualentwicklung</h3>
-            <p>Der Globus, das Windfeld, die Flugrouten: keine Plugins, sondern eigens
-              geschriebener Code mit Performance-Absicherung. Dazu ein Designsystem, das es nur
-              einmal gibt, und fertige Texte.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         PDF HANDOUT
-         ============================================================ -->
-    <section class="band" id="leitfaden">
-      <div class="wrap">
-        <div class="band__head">
-          <span class="band__kicker">Unterlagen</span>
-          <h2>Verkaufsleitfaden</h2>
-        </div>
-        <div class="handout__card">
-          <p>Der vollständige Leitfaden als PDF – zum Mitlesen oder Weitergeben.</p>
-          <a class="btn" href="Verkaufsleitfaden-Websites.md.pdf" target="_blank" rel="noopener">
-            PDF öffnen
-          </a>
-        </div>
-        <iframe
-          class="handout__preview"
-          src="Verkaufsleitfaden-Websites.md.pdf"
-          title="Vorschau Verkaufsleitfaden PDF"
-          loading="lazy"
-        ></iframe>
-      </div>
-    </section>
-
-    <footer class="wrap">
-      Demo-Suite · Alle Unternehmen der neun Demos sind fiktiv · Ehso's Burger ist ein echtes,
-      ausgeliefertes Kundenprojekt · Alle Preise zzgl. USt. · Details im README.md
-    </footer>
-
   </main>
+
+  <footer>
+    <div class="wrap">
+      Alle Unternehmen der neun Demos sind fiktiv · Ehso's Burger ist ein echtes,
+      ausgeliefertes Kundenprojekt · Alle Preise zzgl. USt.
+    </div>
+  </footer>
+
+  <nav class="tabbar" aria-label="Schnellnavigation">
+    <a href="#demos" data-tab="demos"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg>Demos</a>
+    <a href="#pakete" data-tab="pakete"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg>Pakete</a>
+    <a href="#wartung" data-tab="wartung"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>Wartung</a>
+    <a href="#rabatte" data-tab="rabatte"><svg class="ico" aria-hidden="true"><use href="#i-percent"/></svg>Rabatte</a>
+  </nav>
+
+  <!-- ============================================================
+       FULL-SCREEN DEMO VIEWER
+       ============================================================ -->
+  <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="viewer-title" hidden>
+    <div class="viewer__bar">
+      <button type="button" class="vbtn vbtn--close" data-v="close" aria-label="Schließen">
+        <svg class="ico" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+      <div class="viewer__meta">
+        <strong class="viewer__title" id="viewer-title"></strong>
+        <span class="viewer__sub"><span class="badge" id="viewer-tier"></span><span id="viewer-count"></span></span>
+      </div>
+      <button type="button" class="vbtn" data-v="prev" aria-label="Vorherige Demo">
+        <svg class="ico" aria-hidden="true"><use href="#i-prev"/></svg>
+      </button>
+      <button type="button" class="vbtn" data-v="next" aria-label="Nächste Demo">
+        <svg class="ico" aria-hidden="true"><use href="#i-next"/></svg>
+      </button>
+      <a class="vbtn" id="viewer-ext" href="#" target="_blank" rel="noopener" aria-label="In neuem Tab öffnen">
+        <svg class="ico" aria-hidden="true"><use href="#i-external"/></svg>
+      </a>
+    </div>
+    <div class="viewer__stage">
+      <iframe id="viewer-frame" src="about:blank" title="Demo"></iframe>
+      <div class="viewer__loading" aria-hidden="true"><span class="spinner"></span>Demo wird geladen …</div>
+    </div>
+  </div>
 
   <script>
     (function () {
       'use strict';
 
+      var root = document.documentElement;
+      var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      function scrollBehavior() { return reducedMotion.matches ? 'auto' : 'smooth'; }
+      function toArray(list) { return Array.prototype.slice.call(list); }
+
       /* ---------- Package tabs -------------------------------------
          Panels are only hidden once JS runs, so a JS-less phone still
          shows all three packages stacked. */
       var tablist = document.querySelector('[role="tablist"]');
-      var tabs = tablist ? Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]')) : [];
+      var tabs = tablist ? toArray(tablist.querySelectorAll('[role="tab"]')) : [];
       var panels = tabs.map(function (t) { return document.getElementById(t.getAttribute('aria-controls')); });
 
       /* Above 900px the CSS shows all three packages side by side and hides the
@@ -1351,17 +1786,235 @@
         });
 
         /* Decision-helper buttons jump to the packages and open that tab. */
-        document.querySelectorAll('[data-goto]').forEach(function (btn) {
+        toArray(document.querySelectorAll('[data-goto]')).forEach(function (btn) {
           btn.addEventListener('click', function () {
             selectTier(btn.dataset.goto, false);
-            document.getElementById('pakete').scrollIntoView({ block: 'start' });
+            document.getElementById('pakete').scrollIntoView({ block: 'start', behavior: scrollBehavior() });
           });
         });
       }
 
-      /* ---------- Cost drivers: expanded by default on wide screens --- */
-      if (window.matchMedia('(min-width: 900px)').matches) {
-        document.querySelectorAll('details.driver').forEach(function (d) { d.open = true; });
+      /* ---------- Gallery filter ----------------------------------- */
+      var filters = toArray(document.querySelectorAll('[data-filter]'));
+      var cards = toArray(document.querySelectorAll('.gallery .card'));
+      filters.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var tier = btn.dataset.filter;
+          filters.forEach(function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+          cards.forEach(function (c) { c.hidden = tier !== 'all' && c.dataset.tier !== tier; });
+        });
+      });
+
+      /* ---------- In-page section links ----------------------------
+         Scroll without writing #section into the URL, so the browser's
+         back gesture is never spent on stepping back through anchors. */
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[href^="#"]');
+        if (!a || a.hasAttribute('data-demo')) return;
+        var id = a.getAttribute('href').slice(1);
+        var target = id === 'top' ? document.body : document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        if (id === 'top') window.scrollTo({ top: 0, behavior: scrollBehavior() });
+        else target.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
+      });
+
+      /* ---------- Active section in top nav / tab bar -------------- */
+      var topLinks = toArray(document.querySelectorAll('.topnav a'));
+      var tabLinks = toArray(document.querySelectorAll('.tabbar a'));
+      if ('IntersectionObserver' in window) {
+        var spy = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (!en.isIntersecting) return;
+            var id = en.target.id;
+            var tab = en.target.dataset.tab || '';
+            /* Sections without a top-nav link keep the previous highlight. */
+            if (topLinks.some(function (l) { return l.getAttribute('href') === '#' + id; }) || !tab) {
+              topLinks.forEach(function (l) { l.classList.toggle('is-active', l.getAttribute('href') === '#' + id); });
+            }
+            tabLinks.forEach(function (l) {
+              var on = l.dataset.tab === tab;
+              l.classList.toggle('is-active', on);
+              if (on) l.setAttribute('aria-current', 'true'); else l.removeAttribute('aria-current');
+            });
+          });
+        }, { rootMargin: '-40% 0px -55% 0px' });
+        toArray(document.querySelectorAll('main > section')).forEach(function (s) { spy.observe(s); });
+      }
+
+      /* ---------- Full-screen demo viewer ---------------------------
+         The first [data-demo] link per slug defines the order and label.
+         Opening pushes one "#demo=…" history entry, so the back button and
+         the iPad edge swipe close the viewer instead of leaving the hub. */
+      var TIER_LABEL = { starter: 'Starter', pro: 'Professional', premium: 'Premium', ref: 'Referenz' };
+      var viewer = document.getElementById('viewer');
+      var frame = document.getElementById('viewer-frame');
+      var titleEl = document.getElementById('viewer-title');
+      var tierEl = document.getElementById('viewer-tier');
+      var countEl = document.getElementById('viewer-count');
+      var extEl = document.getElementById('viewer-ext');
+      var closeBtn = viewer.querySelector('[data-v="close"]');
+      var themeMeta = document.querySelector('meta[name="theme-color"]');
+      var background = [document.querySelector('.topbar'), document.querySelector('main'),
+                        document.querySelector('footer'), document.querySelector('.tabbar')];
+
+      var demos = [];
+      toArray(document.querySelectorAll('[data-demo]')).forEach(function (a) {
+        var slug = a.dataset.demo;
+        if (demos.some(function (d) { return d.slug === slug; })) return;
+        demos.push({ slug: slug, href: a.getAttribute('href'), name: a.dataset.name, tier: a.dataset.tier });
+      });
+      function indexOf(slug) {
+        for (var i = 0; i < demos.length; i++) if (demos[i].slug === slug) return i;
+        return -1;
+      }
+      function slugFromHash() {
+        var m = /^#demo=([\w-]+)$/.exec(location.hash);
+        return m ? m[1] : null;
+      }
+
+      var index = -1;
+      var trigger = null;
+      var baseLength = 0;
+      var loadTimer = 0;
+
+      function navigateFrame(url) {
+        /* replace() keeps demo switches out of the session history. */
+        try { frame.contentWindow.location.replace(url); } catch (err) { frame.src = url; }
+      }
+
+      function doneLoading() {
+        clearTimeout(loadTimer);
+        viewer.classList.remove('is-loading');
+      }
+
+      function show(i) {
+        var d = demos[i];
+        index = i;
+        titleEl.textContent = d.name;
+        tierEl.textContent = TIER_LABEL[d.tier] || '';
+        tierEl.className = 'badge badge--' + d.tier;
+        countEl.textContent = (i + 1) + ' / ' + demos.length;
+        extEl.href = d.href;
+        frame.title = d.name;
+
+        if (frame.dataset.slug !== d.slug) {
+          frame.dataset.slug = d.slug;
+          viewer.classList.add('is-loading');
+          clearTimeout(loadTimer);
+          loadTimer = setTimeout(doneLoading, 8000);
+          navigateFrame(d.href);
+        }
+
+        if (viewer.hidden) {
+          viewer.hidden = false;
+          background.forEach(function (el) { if (el) el.inert = true; });
+          root.classList.add('viewer-open');
+          themeMeta.setAttribute('content', '#0B0F14');
+          closeBtn.focus({ preventScroll: true });
+        }
+      }
+
+      function hide() {
+        if (viewer.hidden) return;
+        viewer.hidden = true;
+        background.forEach(function (el) { if (el) el.inert = false; });
+        root.classList.remove('viewer-open');
+        themeMeta.setAttribute('content', '#F5F2EC');
+        doneLoading();
+        /* Unload the demo so WebGL/canvas heroes stop running. */
+        frame.dataset.slug = '';
+        navigateFrame('about:blank');
+        if (slugFromHash()) history.replaceState(null, '', location.pathname + location.search);
+        if (trigger) trigger.focus({ preventScroll: true });
+        trigger = null;
+      }
+
+      function open(slug, from) {
+        var i = indexOf(slug);
+        if (i < 0) return false;
+        trigger = from || null;
+        if (viewer.hidden) {
+          baseLength = history.length;
+          history.pushState({ demo: slug }, '', '#demo=' + slug);
+        } else {
+          history.replaceState({ demo: slug }, '', '#demo=' + slug);
+        }
+        show(i);
+        return true;
+      }
+
+      function step(dir) {
+        var i = (index + dir + demos.length) % demos.length;
+        history.replaceState({ demo: demos[i].slug }, '', '#demo=' + demos[i].slug);
+        show(i);
+      }
+
+      function requestClose() {
+        /* Step back over our own entry plus anything the demo pushed. */
+        var n = history.length - baseLength;
+        if (history.state && history.state.demo && n > 0) history.go(-n);
+        else hide();
+      }
+
+      /* Links inside a demo would each add a history entry, making "back"
+         walk through demo pages before it closes the viewer. Same-origin
+         page loads are turned into replace() navigations instead. Links a
+         demo handles itself (defaultPrevented) are left alone. On file://
+         the frame is cross-origin and this quietly does nothing. */
+      frame.addEventListener('load', function () {
+        doneLoading();
+        var doc;
+        try { doc = frame.contentDocument; } catch (err) { return; }
+        if (!doc || !frame.dataset.slug) return;
+        doc.addEventListener('click', function (e) {
+          if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          var a = e.target.closest && e.target.closest('a[href]');
+          if (!a || a.hasAttribute('download') || (a.target && a.target !== '_self')) return;
+          var win = frame.contentWindow;
+          if (a.origin !== win.location.origin) return;
+          e.preventDefault();
+          win.location.replace(a.href);
+        });
+      });
+
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('[data-demo]');
+        if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        if (open(a.dataset.demo, a)) e.preventDefault();
+      });
+
+      viewer.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-v]');
+        if (!btn) return;
+        if (btn.dataset.v === 'close') requestClose();
+        else step(btn.dataset.v === 'next' ? 1 : -1);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (viewer.hidden) return;
+        if (e.key === 'Escape') { e.preventDefault(); requestClose(); }
+        else if (e.key === 'ArrowRight') step(1);
+        else if (e.key === 'ArrowLeft') step(-1);
+      });
+
+      window.addEventListener('popstate', function () {
+        var slug = slugFromHash();
+        var i = slug ? indexOf(slug) : -1;
+        if (i >= 0) {
+          if (viewer.hidden) baseLength = history.length - 1;
+          if (viewer.hidden || i !== index) show(i);
+        } else {
+          hide();
+        }
+      });
+
+      /* Deep link: index.html#demo=maritim-premium opens that demo, with
+         the hub underneath so closing lands on the overview. */
+      var initial = slugFromHash();
+      if (initial && indexOf(initial) >= 0) {
+        history.replaceState(null, '', location.pathname + location.search);
+        open(initial, null);
       }
 
       /* ---------- Discount calculator -------------------------------
@@ -1394,7 +2047,7 @@
 
       var rowsEl = document.getElementById('calc-rows');
       var savingEl = document.getElementById('calc-saving');
-      var chips = Array.prototype.slice.call(document.querySelectorAll('[data-care]'));
+      var chips = toArray(document.querySelectorAll('[data-care]'));
 
       function render(careIndex) {
         var care = CARE[careIndex];
