@@ -217,7 +217,7 @@
 .fx-story [data-on] { opacity: 0.18; transition: opacity 0.6s var(--fx-ease), transform 0.6s var(--fx-ease), fill 0.4s, stroke 0.4s; }
 .fx-story [data-on].is-on { opacity: 1; }
 
-@media (max-width: 860px) {
+@media (max-width: 860px) and (min-height: 521px) {
   .fx-story__grid { grid-template-columns: 1fr; gap: 0; }
   .fx-story__visual {
     top: calc(var(--fx-header-h, 4.5rem) + 0.4rem); z-index: 2;
@@ -228,6 +228,19 @@
   /* Text sits at the top of each step, so the active one is readable
      directly below the sticky visual. */
   .fx-story__step { min-height: 44svh; justify-content: flex-start; padding-top: 1.5rem; transform: none; }
+}
+
+/* Landscape phones: keep visual and steps side by side, visual fills the
+   short viewport below the header. */
+@media (max-height: 520px) {
+  .fx-story__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; }
+  .fx-story__visual { top: calc(var(--fx-header-h, 4.5rem) + 0.5rem); height: calc(100svh - var(--fx-header-h, 4.5rem) - 1rem); }
+  .fx-story__bar { padding-block: 0.5rem; }
+  .fx-story__foot { padding-block: 0.5rem; }
+  .fx-story__big { font-size: 1.4rem; }
+  .fx-story__steps { padding-block: 10vh 40vh; }
+  .fx-story__step { min-height: 75svh; }
+  .fx-story__step h3 { font-size: 1.25rem; }
 }
 
 /* ---------- 12 · SVG line drawing ---------- */

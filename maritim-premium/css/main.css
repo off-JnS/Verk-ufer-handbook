@@ -596,3 +596,44 @@ h1 em, h2 em { font-style: normal; color: var(--clr-accent); }
 /* Globe: drag to spin (horizontal), page still scrolls vertically */
 .hero { touch-action: pan-y; }
 .hero.is-dragging { cursor: grabbing; }
+
+/* ==========================================================================
+   Mobile polish (applies to every page of this demo)
+   ========================================================================== */
+
+/* Elements toggled with the hidden attribute (e.g. form success messages)
+   must stay hidden even when a component rule sets display. */
+[hidden] { display: none !important; }
+
+@media (max-width: 700px) {
+  /* Comfortable tap targets */
+  .nav-toggle { min-width: 44px; min-height: 44px; justify-content: center; align-items: center; }
+  .logo { min-height: 44px; }
+  .breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
+  .site-footer ul a, .site-footer nav a { display: inline-flex; align-items: center; min-height: 40px; }
+
+  /* Long German compounds must never push the page sideways */
+  h1, h2, h3 {
+    overflow-wrap: break-word; hyphens: auto;
+    /* only split long words ("Ansprech-partner"), never short ones */
+    hyphenate-limit-chars: 10 5 4;
+    -webkit-hyphenate-limit-before: 5; -webkit-hyphenate-limit-after: 4;
+  }
+
+  /* Demo badge: tier name only, so it covers as little content as possible */
+  .tier-badge { left: 0.75rem; bottom: 0.75rem; padding: 0.3rem 0.65rem; }
+  .tier-badge__note { display: none; }
+}
+
+/* Touch screens: a tap leaves :hover applied, so hover lifts would stick. */
+@media (hover: none) {
+  .btn:hover, .tile:hover { transform: none; }
+}
+
+/* Tablets: the desktop nav shows, but fingers need a taller hit area.
+   Padding plus equal negative margin enlarges it without moving anything. */
+@media (pointer: coarse) and (min-width: 701px) {
+  .main-nav a:not(.main-nav__cta) { padding-block: 0.7rem; margin-block: -0.7rem; }
+  .main-nav a:not(.main-nav__cta)::after { bottom: calc(0.7rem - 6px); }
+  .logo { padding-block: 0.4rem; margin-block: -0.4rem; }
+}

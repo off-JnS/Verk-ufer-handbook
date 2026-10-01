@@ -199,6 +199,8 @@ Every site is verified for small screens (fluid grids collapse to one column, ta
 | Elbwind | "Leitwarte": wind-streak dark panel, W1–W4 waypoint codes, 24/7 line | Rotor spin-up loader | Live cycling wind readout in the hero |
 | Aerotec | "Boarding": blueprint grid, GATE-01…04 rows, AOG footer | Plane crosses a dashed runway | Mono spec ticker under the metrics |
 
+Each demo stylesheet ends with a **"Mobile polish"** block: `[hidden]` always wins (form success messages stay hidden until sent), 44 px tap targets for menu toggle, logo, breadcrumbs and footer links, hyphenation for long German compounds only (`hyphenate-limit-chars`), a compact tier badge on phones, hover lifts neutralised on touch screens, and taller nav hit areas on tablets. All nine demos are audited at 360, 390, 430 px, landscape phone (844×390) and iPad mini (744 px): no horizontal overflow, every scroll reveal resolves, menus fully tappable. In the Premium motion layer, masked images are observed through their parent (Chrome ignores clipped images for IntersectionObserver and lazy loading), the horizontal showcase falls back to a swipe row on short landscape screens, and hero copy only drifts/fades when it fits the viewport.
+
 Loaders are **pure CSS** (auto-dismiss ~1.2 s, `pointer-events: none`, `display: none` under `prefers-reduced-motion`) and exist only on Professional/Premium home pages — Starter deliberately has none, because instant load is that tier's selling point.
 
 ---

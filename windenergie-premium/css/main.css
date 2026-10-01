@@ -462,14 +462,14 @@ h3 { font-size: 1.15rem; }
 .oprow:hover .oprow__arrow { transform: translateX(6px); }
 
 /* Inverted CTA band in warning paint */
-.cta-band--signal {
+.cta-band.cta-band--signal {
   background: var(--clr-signal);
   border-top: 0;
 }
 
 .cta-band--signal .kicker { color: rgba(7, 24, 32, 0.65); }
 .cta-band--signal h2 { color: var(--clr-ink); }
-.cta-band--signal p { color: rgba(7, 24, 32, 0.72); }
+.cta-band.cta-band--signal p { color: rgba(7, 24, 32, 0.72); }
 
 .btn--ink { background: var(--clr-ink); color: var(--clr-paper); }
 .btn--ink:hover { background: var(--clr-ink-2); transform: translateY(-2px); }
@@ -1272,3 +1272,48 @@ h3 { font-size: 1.15rem; }
 .hazard { animation: hazard-crawl 1.6s linear infinite; background-size: 45.25px 45.25px; }
 @keyframes hazard-crawl { to { background-position: 45.25px 0; } }
 @media (prefers-reduced-motion: reduce) { .hazard { animation: none; } .bladestory__rotor { animation: none !important; } }
+
+/* ==========================================================================
+   Mobile polish (applies to every page of this demo)
+   ========================================================================== */
+
+/* Elements toggled with the hidden attribute (e.g. form success messages)
+   must stay hidden even when a component rule sets display. */
+[hidden] { display: none !important; }
+
+@media (max-width: 700px) {
+  /* Comfortable tap targets */
+  .nav-toggle { min-width: 44px; min-height: 44px; justify-content: center; align-items: center; }
+  .logo { min-height: 44px; }
+  .breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
+  .site-footer ul a, .site-footer nav a { display: inline-flex; align-items: center; min-height: 40px; }
+
+  /* Long German compounds must never push the page sideways */
+  h1, h2, h3 {
+    overflow-wrap: break-word; hyphens: auto;
+    /* only split long words ("Ansprech-partner"), never short ones */
+    hyphenate-limit-chars: 10 5 4;
+    -webkit-hyphenate-limit-before: 5; -webkit-hyphenate-limit-after: 4;
+  }
+
+  /* Sea map: keep labels readable, swipe sideways instead of shrinking */
+  .seamap-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .seamap { min-width: 640px; }
+
+  /* Demo badge: tier name only, so it covers as little content as possible */
+  .tier-badge { left: 0.75rem; bottom: 0.75rem; padding: 0.3rem 0.65rem; }
+  .tier-badge__note { display: none; }
+}
+
+/* Touch screens: a tap leaves :hover applied, so hover lifts would stick. */
+@media (hover: none) {
+  .btn--signal:hover, .btn--ink:hover, .oprow:hover .oprow__arrow, .card:hover, .park:hover { transform: none; }
+}
+
+/* Tablets: the desktop nav shows, but fingers need a taller hit area.
+   Padding plus equal negative margin enlarges it without moving anything. */
+@media (pointer: coarse) and (min-width: 701px) {
+  .main-nav a:not(.main-nav__cta) { padding-block: 0.7rem; margin-block: -0.7rem; }
+  .main-nav a:not(.main-nav__cta)::after { bottom: calc(0.7rem - 5px); }
+  .logo { padding-block: 0.4rem; margin-block: -0.4rem; }
+}

@@ -566,3 +566,36 @@ h3 { font-size: 1.25rem; }
   .team__grid { grid-template-columns: 1fr; }
   .site-footer__meta { text-align: left; }
 }
+
+/* ==========================================================================
+   Mobile polish (applies to every page of this demo)
+   ========================================================================== */
+
+/* Elements toggled with the hidden attribute (e.g. form success messages)
+   must stay hidden even when a component rule sets display. */
+[hidden] { display: none !important; }
+
+@media (max-width: 700px) {
+  /* Comfortable tap targets */
+  .nav-toggle { min-width: 44px; min-height: 44px; justify-content: center; align-items: center; }
+  .logo { min-height: 44px; }
+  .site-footer ul a, .site-footer nav a { display: inline-flex; align-items: center; min-height: 40px; }
+
+  /* Long German compounds must never push the page sideways */
+  h1, h2, h3 {
+    overflow-wrap: break-word; hyphens: auto;
+    /* only split long words ("Ansprech-partner"), never short ones */
+    hyphenate-limit-chars: 10 5 4;
+    -webkit-hyphenate-limit-before: 5; -webkit-hyphenate-limit-after: 4;
+  }
+
+  /* Demo badge: tier name only, so it covers as little content as possible */
+  .tier-badge { left: 0.75rem; bottom: 0.75rem; padding: 0.3rem 0.65rem; }
+  .tier-badge__note { display: none; }
+  .about__copy h2, .contact__info h2 { margin-bottom: 1rem; }
+}
+
+/* Touch screens: a tap leaves :hover applied, so hover lifts would stick. */
+@media (hover: none) {
+  .btn--primary:hover, .team__card:hover { transform: none; }
+}

@@ -189,13 +189,37 @@
     onEnter(heads, function (el) { el.classList.add("fx-in"); }, { threshold: 0.1 });
   }
 
-  /* ---------- 4 · Mask reveals ---------------------------------------- */
+  /* ---------- 4 · Mask reveals ---------------------------------------
+     Chrome's IntersectionObserver and native lazy loading both honour the
+     image's own clip-path, so a fully masked image never "intersects" and
+     never loads. Observe the (unclipped) parent instead: start loading
+     well ahead, open the mask once it is actually on screen. */
   if (!reduce) {
     var masked = $$("main img").filter(function (img) {
       return !img.closest("[data-fx-nomask], .fx-hs, .fx-story, .hero");
     });
     masked.forEach(function (img) { img.classList.add("fx-mask"); });
-    onEnter(masked, function (img) { img.classList.add("fx-in"); }, { threshold: 0.05 });
+    if ("IntersectionObserver" in window) {
+      var watch = function (margin, threshold, cb) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            io.unobserve(entry.target);
+            entry.target.__fxImgs.forEach(cb);
+          });
+        }, { rootMargin: margin, threshold: threshold });
+        return io;
+      };
+      var preload = watch("0px 0px 900px 0px", 0, function (img) { img.loading = "eager"; });
+      var reveal = watch("0px 0px -6% 0px", 0.12, function (img) { img.classList.add("fx-in"); });
+      masked.forEach(function (img) {
+        var box = img.parentElement;
+        if (!box.__fxImgs) { box.__fxImgs = []; preload.observe(box); reveal.observe(box); }
+        box.__fxImgs.push(img);
+      });
+    } else {
+      masked.forEach(function (img) { img.classList.add("fx-in"); });
+    }
   }
 
   /* ---------- 5 · Hero parallax ---------------------------------------
@@ -209,6 +233,14 @@
         if (y > vh * 1.3) return;
         var p = clamp(y / vh, 0, 1);
         heroEls.forEach(function (el) {
+          /* Only when the hero copy fits on screen. On phones a tall hero
+             (e.g. with the telemetry panel) would fade and drift out of
+             its own section before the reader reaches its lower part. */
+          if (el.offsetHeight > vh * 0.85) {
+            el.style.transform = "";
+            el.style.opacity = "";
+            return;
+          }
           el.style.transform = "translate3d(0," + (y * 0.32).toFixed(1) + "px,0)";
           el.style.opacity = String(clamp(1 - p * 1.35, 0, 1));
         });
@@ -355,8 +387,11 @@
 
   /* ---------- 10 · Horizontal showcase --------------------------------
      The section grows tall; its inner panel sticks to the viewport while
-     vertical scrolling slides the card track sideways. Without JS or with
-     reduced motion the track is a plain swipeable row. */
+     vertical scrolling slides the card track sideways. Without JS, with
+     reduced motion, or on screens too short for a pinned panel (landscape
+     phones) the track is a plain swipeable row. Rotating the device
+     switches between the two modes. */
+  var shortScreen = window.matchMedia("(max-height: 520px)");
   $$("[data-fx-hs]").forEach(function (sec) {
     if (reduce) return;
     var track = sec.querySelector(".fx-hs__track");
@@ -365,16 +400,25 @@
     var count = sec.querySelector("[data-fx-hs-count]");
     var cards = $$(".fx-hs__card", track);
     var dist = 0;
-    sec.classList.add("fx-hs--pinned");
+    var pinned = false;
 
     var layout = function () {
+      pinned = !shortScreen.matches;
+      sec.classList.toggle("fx-hs--pinned", pinned);
+      if (!pinned) {
+        sec.style.height = "";
+        track.style.transform = "";
+        return;
+      }
       dist = Math.max(0, track.scrollWidth - root.clientWidth);
       sec.style.height = (sticky.offsetHeight + dist) + "px";
     };
     layout();
     layouts.push(layout);
+    if (shortScreen.addEventListener) shortScreen.addEventListener("change", function () { layout(); requestTick(); });
 
     tasks.push(function (y, vh) {
+      if (!pinned) return;
       var r = sec.getBoundingClientRect();
       if (r.bottom < 0 || r.top > vh) return;
       var p = dist ? clamp(-r.top / dist, 0, 1) : 0;
