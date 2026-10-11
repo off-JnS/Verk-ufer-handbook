@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Verkaufsvideo – Storyboard</title>
+  <!--
+    Source of assets/video/verkaufsvideo.mp4, rendered by tools/render-video.mjs.
+
+    Every motion is a Web Animation created up front and paused; window.seek(t)
+    sets all of them to the same time, plus a few tick functions for typed text
+    and counters. The page therefore has no clock of its own: open it in a
+    browser and call seek(12.5) in the console to inspect any frame.
+
+    Images come from tools/video/stills/ (captured by the render script).
+  -->
+  <style>
+    :root {
+      --ink: #10151C;
+      --paper: #F5F2EC;
+      --card: #FFFFFF;
+      --fog: #6A7683;
+      --line: #E3DCCE;
+      --night: #0B0F14;
+      --starter: #C4692F;
+      --pro: #9A7433;
+      --premium: #E8431C;
+      --starter-soft: #FBEEE3;
+      --pro-soft: #F5EEDD;
+      --premium-soft: #FFE7E0;
+      --care-1: #5E8B7E;
+      --care-2: #22705F;
+      --care-3: #14524A;
+      --care-soft: #E7F1ED;
+      --ok: #1F8A5B;
+      --no: #B4442E;
+      --ehso-bg: #111111;
+      --ehso-surface: #1C1C1C;
+      --ehso-orange: #F97316;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+    .scene { position: absolute; inset: 0; opacity: 0; }
+    .scene--dark { background: var(--night); color: #F4F1EA; }
+    .scene--ehso { background: var(--ehso-bg); color: #F8F8F8; }
+
+    /* ---------- Shared type ---------- */
+    .kicker {
+      display: inline-block;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--fog);
+    }
+    .h1 { font-size: 104px; line-height: 1.02; letter-spacing: -0.04em; font-weight: 800; }
+    .h2 { font-size: 76px; line-height: 1.04; letter-spacing: -0.035em; font-weight: 800; }
+    .h3 { font-size: 52px; line-height: 1.1; letter-spacing: -0.03em; font-weight: 800; }
+    .lead { font-size: 36px; line-height: 1.35; color: var(--fog); font-weight: 500; }
+    .accent { color: var(--premium); }
+    .scene--dark .lead { color: #A3ADB8; }
+
+    .col { position: absolute; left: 140px; top: 0; bottom: 0; width: 900px; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
+    .line { display: block; }
+
+    /* ---------- Phone mock ---------- */
+    .phone {
+      position: absolute;
+      width: 360px;
+      height: 751px;
+      border-radius: 54px;
+      background: var(--ink);
+      padding: 12px;
+      box-shadow: 0 50px 90px -40px rgba(16, 21, 28, 0.7), 0 0 0 2px #2A313B inset;
+    }
+    .phone__screen {
+      position: relative;
+      width: 336px;
+      height: 727px;
+      border-radius: 43px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .phone__notch {
+      position: absolute; top: 10px; left: 50%; width: 104px; height: 30px; margin-left: -52px;
+      background: #000; border-radius: 20px; z-index: 5;
+    }
+    .phone__screen > img, .scr > img { position: absolute; left: 0; top: 0; width: 336px; height: auto; }
+    .scr > img { top: 50px; }
+
+    /* ---------- Browser mock ---------- */
+    .browser {
+      position: absolute;
+      width: 940px;
+      border-radius: 18px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 50px 90px -45px rgba(16, 21, 28, 0.65), 0 0 0 1px rgba(16, 21, 28, 0.08);
+    }
+    .browser__bar { height: 44px; display: flex; align-items: center; gap: 9px; padding: 0 18px; background: #EFEAE1; }
+    .browser__bar i { width: 13px; height: 13px; border-radius: 50%; background: #D7CFC2; }
+    .browser__bar span {
+      margin-left: 20px; flex: 1; height: 26px; border-radius: 8px; background: #fff;
+      font-size: 15px; color: var(--fog); display: flex; align-items: center; padding-left: 14px;
+    }
+    .browser__screen { position: relative; height: 588px; overflow: hidden; }
+    .browser__screen img { position: absolute; left: 0; top: 0; width: 940px; height: auto; }
+    .scene--dark .browser { box-shadow: 0 50px 100px -40px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.1); }
+    .scene--dark .browser__bar { background: #1A222C; }
+    .scene--dark .browser__bar i { background: #3A4552; }
+    .scene--dark .browser__bar span { background: #0F151C; color: #7D8996; }
+
+    /* ---------- Persistent footer ---------- */
+    .foot {
+      position: absolute; left: 140px; right: 140px; bottom: 44px; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 22px; font-weight: 800; color: var(--ink); transition: none;
+    }
+    .foot.on-dark { color: #F4F1EA; }
+    .brand { display: flex; align-items: center; gap: 14px; letter-spacing: -0.01em; }
+    .brand__mark { width: 40px; height: 40px; border-radius: 11px; background: var(--ink); display: grid; place-items: center; }
+    .foot.on-dark .brand__mark { background: #fff; }
+    .brand__mark i {
+      width: 14px; height: 14px; border-radius: 50%; background: var(--premium);
+      box-shadow: 13px 0 0 -3px var(--starter); transform: translateX(-5px);
+    }
+    .chapter { font-size: 18px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fog); }
+    .foot.on-dark .chapter { color: #8994A0; }
+    .progress { position: absolute; left: 0; bottom: 0; height: 6px; width: 1920px; background: var(--premium); transform-origin: left; z-index: 50; }
+
+    /* =========================================================
+       SCENES 1–3 — Anna's evening (shared phone)
+       ========================================================= */
+    #phoneA { left: 1250px; top: 150px; z-index: 10; }
+
+    .status { position: absolute; top: 0; left: 0; right: 0; height: 52px; display: flex; justify-content: space-between; align-items: center; padding: 6px 30px 0 34px; font-size: 17px; font-weight: 700; z-index: 4; }
+    .status b { font-weight: 700; }
+    .status__icons { display: flex; gap: 6px; align-items: center; }
+    .status__icons i { display: block; width: 18px; height: 11px; border-radius: 3px; border: 2px solid currentColor; }
+    .status__icons i:first-child { width: 16px; border: 0; background: linear-gradient(90deg, currentColor 0 22%, transparent 22% 36%, currentColor 36% 58%, transparent 58% 72%, currentColor 72%); height: 10px; }
+
+    .scr { position: absolute; inset: 0; background: #fff; }
+    .search { position: absolute; top: 74px; left: 18px; right: 18px; height: 54px; border-radius: 27px; background: #F1F1F3; display: flex; align-items: center; gap: 12px; padding: 0 20px; font-size: 21px; font-weight: 600; }
+    .search svg { width: 22px; height: 22px; flex: none; stroke: var(--fog); fill: none; stroke-width: 2.4; stroke-linecap: round; }
+    .caret { display: inline-block; width: 2px; height: 24px; background: #2F6BFF; margin-left: 1px; vertical-align: -4px; }
+    .suggest { position: absolute; top: 146px; left: 18px; right: 18px; }
+    .suggest p { font-size: 18px; color: var(--fog); padding: 13px 4px; border-bottom: 1px solid #EEE; display: flex; gap: 12px; }
+    .suggest p::before { content: "↗"; color: #B0B6BE; }
+
+    .results { position: absolute; top: 146px; left: 14px; right: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .res { border-radius: 18px; border: 1px solid #ECECEC; padding: 14px 16px; background: #fff; }
+    .res__name { font-size: 19px; font-weight: 800; }
+    .res__meta { font-size: 14px; color: var(--fog); margin-top: 3px; }
+    .res__tag { display: inline-block; margin-top: 9px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: #F1F1F3; color: #8A9098; }
+    .res--win { border: 2px solid var(--ok); box-shadow: 0 16px 30px -18px rgba(31, 138, 91, 0.6); }
+    .res__shot { height: 132px; border-radius: 10px; margin: 2px 0 10px; background: url(stills/friseur-basic-phone.jpg) center 21% / cover no-repeat; }
+    .stars { color: #E9A23B; letter-spacing: 1px; }
+    .res__btn { margin-top: 10px; display: flex; gap: 8px; }
+    .res__btn span { flex: 1; text-align: center; font-size: 14px; font-weight: 800; padding: 9px 0; border-radius: 99px; background: #F1F1F3; }
+    .res__btn span.go { background: #B9566A; color: #fff; }
+    .tap { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: rgba(16, 21, 28, 0.25); border: 3px solid rgba(255, 255, 255, 0.9); opacity: 0; z-index: 6; }
+
+    .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 26px 26px 0 0; padding: 18px 22px 34px; box-shadow: 0 -20px 50px -10px rgba(0, 0, 0, 0.35); z-index: 3; }
+    .sheet__grab { width: 46px; height: 5px; border-radius: 3px; background: #DDD; margin: 0 auto 16px; }
+    .sheet h4 { font-size: 22px; font-weight: 800; margin-bottom: 14px; }
+    .field { border: 1px solid #E4E0DA; border-radius: 12px; padding: 9px 14px; margin-bottom: 10px; }
+    .field small { display: block; font-size: 12px; color: var(--fog); font-weight: 700; letter-spacing: 0.04em; }
+    .field span { font-size: 17px; font-weight: 600; min-height: 22px; display: block; }
+    .sheet__btn { margin-top: 6px; height: 52px; border-radius: 99px; background: #B9566A; color: #fff; font-size: 18px; font-weight: 800; display: grid; place-items: center; }
+    .sent { position: absolute; inset: 0; background: rgba(255, 255, 255, 0.97); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 14px; z-index: 4; border-radius: 26px 26px 0 0; }
+    .sent__ok { width: 78px; height: 78px; border-radius: 50%; background: var(--ok); display: grid; place-items: center; }
+    .sent__ok svg { width: 40px; height: 40px; stroke: #fff; fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .sent b { font-size: 24px; }
+    .sent p { font-size: 17px; color: var(--fog); }
+
+    /* Scene 2 list */
+    .verdicts { list-style: none; display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
+    .verdicts li { display: flex; gap: 18px; align-items: flex-start; font-size: 34px; line-height: 1.3; font-weight: 600; }
+    .verdicts li i { flex: none; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-weight: 900; font-size: 26px; color: #fff; margin-top: -2px; }
+    .verdicts .no i { background: var(--no); }
+    .verdicts .no { color: #6E737A; }
+    .verdicts .ok i { background: var(--ok); }
+    .verdicts small { display: block; font-size: 26px; font-weight: 500; color: var(--fog); }
+    .punch { margin-top: 26px; padding: 26px 32px; border-radius: 22px; background: var(--ink); color: #fff; font-size: 38px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+    .punch em { font-style: normal; color: #FF8A6A; }
+
+    /* Scene 3 notification */
+    .notif { display: flex; gap: 22px; align-items: center; width: 760px; padding: 24px 28px; border-radius: 26px; background: rgba(255, 255, 255, 0.96); box-shadow: 0 30px 60px -30px rgba(16, 21, 28, 0.5), 0 0 0 1px var(--line); }
+    .notif__icon { flex: none; width: 70px; height: 70px; border-radius: 18px; background: #B9566A; display: grid; place-items: center; }
+    .notif__icon svg { width: 36px; height: 36px; stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .notif__top { display: flex; justify-content: space-between; font-size: 20px; color: var(--fog); font-weight: 700; }
+    .notif b { display: block; font-size: 28px; margin: 2px 0; }
+    .notif p { font-size: 24px; color: #3A424C; }
+
+    /* =========================================================
+       SCENE 4 — analogy intro
+       ========================================================= */
+    .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 30px; }
+    .shops { display: flex; gap: 40px; margin-top: 40px; }
+    .shop { width: 420px; padding: 40px 30px 34px; border-radius: 28px; background: var(--card); box-shadow: 0 30px 60px -40px rgba(16, 21, 28, 0.6); border-top: 10px solid; }
+    .shop svg { width: 84px; height: 84px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .shop b { display: block; font-size: 40px; letter-spacing: -0.02em; margin-top: 14px; color: var(--ink); }
+    .shop span { display: block; margin-top: 8px; font-size: 22px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+    .shop.s1 { border-color: var(--starter); color: var(--starter); }
+    .shop.s2 { border-color: var(--pro); color: var(--pro); }
+    .shop.s3 { border-color: var(--premium); color: var(--premium); }
+
+    /* =========================================================
+       SCENES 5–7 — tiers (built from TIERS in the script)
+       ========================================================= */
+    .tier .col { width: 720px; gap: 24px; }
+    .pill { align-self: flex-start; font-size: 24px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 10px 22px; border-radius: 99px; }
+    .tier .h2 { font-size: 62px; }
+    .price { display: flex; align-items: baseline; gap: 18px; font-size: 64px; font-weight: 800; letter-spacing: -0.03em; }
+    .price small { font-size: 26px; font-weight: 600; color: var(--fog); letter-spacing: 0; }
+    .scene--dark .price small { color: #8994A0; }
+    .ticks { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .ticks li { display: flex; gap: 16px; align-items: center; font-size: 32px; font-weight: 600; }
+    .ticks li i { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; }
+    .ticks li i svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+    .fits { display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 700; color: var(--fog); margin-top: 6px; }
+    .fits span { padding: 8px 18px; border-radius: 99px; border: 2px solid var(--line); color: var(--ink); }
+    .scene--dark .fits span { border-color: #26303B; color: #F4F1EA; }
+    .tier .browser { left: 900px; top: 190px; width: 840px; }
+    .tier .browser__screen { height: 525px; }
+    .tier .browser__screen img { width: 840px; }
+    .tier .phone { left: 1610px; top: 380px; transform: scale(0.74); transform-origin: top left; }
+    .demo-label { position: absolute; left: 900px; top: 790px; width: 680px; font-size: 22px; line-height: 1.45; font-weight: 600; color: var(--fog); }
+    .demo-label b { color: var(--ink); }
+    .scene--dark .demo-label b { color: #F4F1EA; }
+
+    /* =========================================================
+       SCENE 8 — maintenance
+       ========================================================= */
+    .chat { width: 760px; display: flex; flex-direction: column; gap: 16px; margin-top: 12px; }
+    .bubble { max-width: 600px; padding: 20px 26px; border-radius: 26px; font-size: 29px; line-height: 1.3; font-weight: 500; }
+    .bubble--me { align-self: flex-start; background: var(--card); border-bottom-left-radius: 8px; box-shadow: 0 20px 40px -30px rgba(16, 21, 28, 0.6); }
+    .bubble--us { align-self: flex-end; background: var(--care-2); color: #fff; border-bottom-right-radius: 8px; }
+    .bubble small { display: block; font-size: 18px; font-weight: 700; opacity: 0.6; margin-bottom: 4px; }
+    .typing { align-self: flex-end; display: flex; gap: 8px; padding: 22px 26px; border-radius: 26px; background: var(--care-soft); }
+    .typing i { width: 12px; height: 12px; border-radius: 50%; background: var(--care-2); }
+    .care-stack { position: absolute; left: 1080px; top: 0; bottom: 0; width: 700px; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
+    .care { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 6px 20px; align-items: baseline; padding: 28px 34px; border-radius: 24px; background: var(--card); border-left: 12px solid; box-shadow: 0 30px 60px -45px rgba(16, 21, 28, 0.7); }
+    .care b { font-size: 36px; letter-spacing: -0.02em; }
+    .care strong { font-size: 40px; letter-spacing: -0.02em; }
+    .care strong small { font-size: 22px; color: var(--fog); font-weight: 600; }
+    .care p { grid-column: 1 / -1; font-size: 25px; line-height: 1.35; color: #4A535D; }
+    .care.c1 { border-color: var(--care-1); } .care.c1 b { color: var(--care-1); }
+    .care.c2 { border-color: var(--care-2); } .care.c2 b { color: var(--care-2); }
+    .care.c3 { border-color: var(--care-3); } .care.c3 b { color: var(--care-3); }
+    .care__flag { position: absolute; top: -16px; right: 30px; font-size: 18px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; background: var(--care-2); color: #fff; padding: 6px 16px; border-radius: 99px; }
+
+    /* =========================================================
+       SCENE 9 — combination discount
+       ========================================================= */
+    .deals { position: absolute; left: 140px; top: 410px; width: 1020px; display: flex; flex-direction: column; gap: 20px; }
+    .deal { display: grid; grid-template-columns: 270px 180px 220px 1fr; align-items: center; padding: 24px 34px; border-radius: 24px; background: var(--card); box-shadow: 0 30px 60px -45px rgba(16, 21, 28, 0.7); }
+    .deal__name { display: flex; align-items: center; gap: 16px; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; }
+    .deal__name i { width: 20px; height: 20px; border-radius: 50%; }
+    .deal__old { white-space: nowrap; position: relative; justify-self: start; font-size: 40px; font-weight: 700; color: var(--fog); }
+    .deal__old .strike { position: absolute; left: -6px; right: -6px; top: 52%; height: 5px; border-radius: 3px; background: var(--no); transform-origin: left; }
+    .deal__new { white-space: nowrap; font-size: 56px; font-weight: 900; color: var(--ok); letter-spacing: -0.03em; }
+    .deal__when { font-size: 22px; font-weight: 700; color: var(--care-2); background: var(--care-soft); padding: 10px 18px; border-radius: 99px; justify-self: end; }
+    .example { position: absolute; left: 1220px; top: 410px; width: 560px; padding: 40px 42px; border-radius: 28px; background: var(--ink); color: #fff; }
+    .example .kicker { color: #FF8A6A; font-size: 20px; }
+    .example h4 { font-size: 36px; line-height: 1.2; margin: 14px 0 22px; letter-spacing: -0.02em; }
+    .example__row { display: flex; justify-content: space-between; font-size: 28px; padding: 12px 0; border-top: 1px solid #2A333E; }
+    .example__row b { font-weight: 800; }
+    .example__row .free { color: #6FD3A2; }
+    .example__day { margin-top: 22px; font-size: 30px; line-height: 1.3; font-weight: 600; color: #DDE3EA; }
+    .example__day em { font-style: normal; color: #FF8A6A; font-weight: 800; }
+    .fine { position: absolute; left: 140px; top: 900px; font-size: 22px; color: var(--fog); font-weight: 600; }
+
+    /* =========================================================
+       SCENE 10 — reference
+       ========================================================= */
+    .scene--ehso .kicker { color: var(--ehso-orange); }
+    .ehso-name { font-family: Impact, "Arial Narrow", sans-serif; font-size: 96px; letter-spacing: 0.02em; line-height: 1; }
+    .ehso-name span { color: var(--ehso-orange); }
+    .ehso-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .ehso-list li { font-size: 31px; font-weight: 600; display: flex; gap: 16px; align-items: center; }
+    .ehso-list li::before { content: ""; width: 14px; height: 14px; border-radius: 50%; background: var(--ehso-orange); flex: none; }
+    .scene--ehso .browser { left: 900px; top: 190px; box-shadow: 0 50px 100px -40px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.1); }
+    .scene--ehso .browser__bar { background: #222; }
+    .scene--ehso .browser__bar i { background: #444; }
+    .scene--ehso .browser__bar span { background: #111; color: #888; }
+    .flag { align-self: flex-start; font-size: 22px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 20px; border-radius: 99px; background: rgba(249, 115, 22, 0.16); color: var(--ehso-orange); }
+
+    /* =========================================================
+       SCENE 11 — process
+       ========================================================= */
+    .steps { position: relative; display: grid; grid-template-columns: repeat(3, 480px); gap: 60px; margin-top: 60px; text-align: left; }
+    .steps__line { position: absolute; left: 60px; width: 1080px; top: 60px; height: 6px; border-radius: 3px; background: var(--premium); transform-origin: left; }
+    .step__num { position: relative; width: 120px; height: 120px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 56px; font-weight: 900; border: 8px solid var(--paper); }
+    .step h4 { font-size: 46px; letter-spacing: -0.02em; margin: 26px 0 10px; }
+    .step p { font-size: 30px; line-height: 1.35; color: var(--fog); font-weight: 500; }
+
+    /* =========================================================
+       SCENE 12 — call to action
+       ========================================================= */
+    .cta-box { margin-top: 40px; padding: 46px 70px; border-radius: 34px; background: var(--ink); color: #fff; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+    .cta-box b { font-size: 60px; letter-spacing: -0.03em; }
+    .cta-box span { font-size: 30px; color: #B9C2CC; font-weight: 500; }
+  </style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- ===================== SCENE 1 — hook ===================== -->
+  <section class="scene" id="s1">
+    <div class="col" style="width:1000px">
+      <span class="kicker" data-a="k">Ein ganz normaler Abend</span>
+      <h1 class="h1">
+        <span class="line" data-a="l1">Dienstag, 21:47 Uhr.</span>
+        <span class="line accent" data-a="l2">Anna sucht einen neuen Friseur.</span>
+      </h1>
+      <p class="lead" data-a="p" style="max-width:820px">Sie hat ihr Handy in der Hand – und keine Lust, lange zu suchen.</p>
+    </div>
+  </section>
+
+  <!-- ===================== SCENE 2 — results ===================== -->
+  <section class="scene" id="s2">
+    <div class="col" style="width:1000px; gap:20px">
+      <span class="kicker" data-a="k">Drei Treffer</span>
+      <h2 class="h2" data-a="h">Wen ruft Anna an?</h2>
+      <ul class="verdicts">
+        <li class="no" data-a="v1"><i>✕</i><span>Salon Schnittpunkt<small>keine Website – nur eine Telefonnummer</small></span></li>
+        <li class="no" data-a="v2"><i>✕</i><span>Frisör am Markt<small>Website von 2011, auf dem Handy kaum lesbar</small></span></li>
+        <li class="ok" data-a="v3"><i>✓</i><span>Haarwerk Winterhude<small>Fotos, Preise und Termin per Knopfdruck</small></span></li>
+      </ul>
+      <p class="punch" data-a="punch">Anna wählt nicht den besten Salon.<br>Sondern den, der <em>online am besten überzeugt.</em></p>
+    </div>
+  </section>
+
+  <!-- ===================== SCENE 3 — 24/7 ===================== -->
+  <section class="scene" id="s3">
+    <div class="col" style="width:1000px">
+      <span class="kicker" data-a="k">21:49 Uhr</span>
+      <h2 class="h2" data-a="h" style="font-size:66px">Der Salon hat längst zu.<br><span class="accent">Die Anfrage kommt trotzdem an.</span></h2>
+      <div class="notif" data-a="n">
+        <div class="notif__icon"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
+        <div style="flex:1">
+          <div class="notif__top"><span>Ihre Website</span><span>jetzt</span></div>
+          <b>Neue Terminanfrage</b>
+          <p>Anna K. · Schnitt &amp; Föhnen · Donnerstag, 10:00 Uhr</p>
+        </div>
+      </div>
+      <p class="lead" data-a="p" style="max-width:860px">Ihre Website ist die Mitarbeiterin, die <b style="color:var(--ink)">nie Feierabend</b> macht.</p>
+    </div>
+  </section>
+
+  <!-- Anna's phone, shared by scenes 1–3 -->
+  <div class="phone" id="phoneA">
+    <div class="phone__screen">
+      <div class="phone__notch"></div>
+      <div class="status"><b id="clock">21:47</b><span class="status__icons"><i></i><i></i></span></div>
+
+      <div class="scr" id="scr-search">
+        <div class="search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <span><span id="typed"></span><span class="caret" id="caret"></span></span>
+        </div>
+        <div class="suggest" id="suggest">
+          <p>Friseur in der Nähe</p>
+          <p>Friseur Winterhude Termin</p>
+          <p>Friseur heute geöffnet</p>
+        </div>
+      </div>
+
+      <div class="scr" id="scr-results">
+        <div class="search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <span>Friseur Winterhude</span>
+        </div>
+        <div class="results">
+          <div class="res" data-a="r1">
+            <div class="res__name">Salon Schnittpunkt</div>
+            <div class="res__meta">Friseur · Winterhude</div>
+            <span class="res__tag">Keine Website</span>
+          </div>
+          <div class="res res--win" data-a="r2" id="win">
+            <div class="res__shot"></div>
+            <div class="res__name">Haarwerk Winterhude</div>
+            <div class="res__meta"><span class="stars">★★★★★</span> 4,9 · Mühlenkamp 34</div>
+            <div class="res__btn"><span>Website</span><span class="go">Termin anfragen</span></div>
+          </div>
+          <div class="res" data-a="r3">
+            <div class="res__name">Frisör am Markt</div>
+            <div class="res__meta">Friseur · Winterhude</div>
+            <span class="res__tag">Website zuletzt geändert: 2011</span>
+          </div>
+        </div>
+        <div class="tap" id="tap1" style="left:200px; top:448px"></div>
+      </div>
+
+      <div class="scr" id="scr-site">
+        <img id="siteImg" src="stills/friseur-basic-phone.jpg" alt="">
+        <div class="sheet" id="sheet">
+          <div class="sheet__grab"></div>
+          <h4>Termin anfragen</h4>
+          <div class="field"><small>NAME</small><span id="f1"></span></div>
+          <div class="field"><small>WUNSCH</small><span id="f2"></span></div>
+          <div class="field"><small>WUNSCHTERMIN</small><span id="f3"></span></div>
+          <div class="sheet__btn">Anfrage senden</div>
+          <div class="sent" id="sent">
+            <div class="sent__ok"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+            <b>Anfrage gesendet</b>
+            <p>Danke, Anna! Wir melden uns.</p>
+          </div>
+        </div>
+        <div class="tap" id="tap2" style="left:123px; top:625px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SCENE 4 — analogy ===================== -->
+  <section class="scene" id="s4">
+    <div class="center">
+      <span class="kicker" data-a="k">Drei Pakete</span>
+      <h2 class="h2" data-a="h">Stellen Sie sich Ihre Website<br>wie ein Geschäft vor.</h2>
+      <div class="shops">
+        <div class="shop s1" data-a="c1">
+          <svg viewBox="0 0 48 48"><rect x="6" y="12" width="36" height="24" rx="3"/><path d="M12 20h14M12 26h10"/><circle cx="34" cy="23" r="4"/></svg>
+          <b>Die Visitenkarte</b><span>Starter</span>
+        </div>
+        <div class="shop s2" data-a="c2">
+          <svg viewBox="0 0 48 48"><path d="M6 18l4-9h28l4 9"/><path d="M6 18h36v22H6z"/><path d="M12 24h14v10H12zM31 24h6v16"/><path d="M6 18c0 3 2.5 5 6 5s6-2 6-5c0 3 2.5 5 6 5s6-2 6-5c0 3 2.5 5 6 5s6-2 6-5"/></svg>
+          <b>Das Schaufenster</b><span>Professional</span>
+        </div>
+        <div class="shop s3" data-a="c3">
+          <svg viewBox="0 0 48 48"><path d="M4 42h40"/><path d="M8 42V20l16-12 16 12v22"/><path d="M18 42V30h12v12"/><path d="M24 4l1.6 3.2 3.4.5-2.5 2.4.6 3.4-3.1-1.6-3.1 1.6.6-3.4-2.5-2.4 3.4-.5z"/><path d="M13 24h5M30 24h5"/></svg>
+          <b>Der Flagship-Store</b><span>Premium</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tier scenes are generated from TIERS below. -->
+  <div id="tiers"></div>
+
+  <!-- ===================== SCENE 8 — maintenance ===================== -->
+  <section class="scene" id="s8">
+    <div class="col" style="width:860px; gap:22px">
+      <span class="kicker" data-a="k">Wartung &amp; Betreuung</span>
+      <h2 class="h2" data-a="h">Und nach dem Start?<br><span style="color:var(--care-2)">Wir kümmern uns.</span></h2>
+      <div class="chat">
+        <div class="bubble bubble--me" data-a="b1"><small>Sie</small>Hallo! Können Sie unsere Öffnungszeiten für Weihnachten ändern?</div>
+        <div class="typing" data-a="dots"><i></i><i></i><i></i></div>
+        <div class="bubble bubble--us" data-a="b2"><small>Wir</small>Erledigt – ist schon online. Frohe Feiertage!</div>
+      </div>
+    </div>
+    <div class="care-stack">
+      <div class="care c1" data-a="c1"><b>Basic</b><strong>59 € <small>/ Monat</small></strong><p>Wie eine Versicherung: Speicherplatz, Internet-Adresse und Überwachung – Sie müssen an nichts denken.</p></div>
+      <div class="care c2" data-a="c2"><span class="care__flag">Beliebt</span><b>Standard</b><strong>99 € <small>/ Monat</small></strong><p>Änderungen auf Zuruf – wie oben im Chat – plus ein Monatsbericht mit Ihren Besucherzahlen.</p></div>
+      <div class="care c3" data-a="c3"><b>Premium</b><strong>149 € <small>/ Monat</small></strong><p>Wir pflegen Ihr Google-Profil und verbessern Ihre Seite laufend, damit Sie bei Google sichtbarer werden.</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== SCENE 9 — discount ===================== -->
+  <section class="scene" id="s9">
+    <div style="position:absolute; left:140px; top:130px; width:1640px; display:flex; flex-direction:column; gap:20px">
+      <span class="kicker" data-a="k">Das Beste daran</span>
+      <h2 class="h2" data-a="h">Mit Wartung wird Ihre Website günstiger.<br><span style="color:var(--ok)">Bis auf 0 €.</span></h2>
+    </div>
+    <div class="deals">
+      <div class="deal" data-a="d1">
+        <span class="deal__name"><i style="background:var(--starter)"></i>Starter</span>
+        <span class="deal__old">1.000 €<span class="strike" data-a="x1"></span></span>
+        <span class="deal__new" id="n1">1.000 €</span>
+        <span class="deal__when">mit jeder Wartung</span>
+      </div>
+      <div class="deal" data-a="d2">
+        <span class="deal__name"><i style="background:var(--pro)"></i>Professional</span>
+        <span class="deal__old">1.750 €<span class="strike" data-a="x2"></span></span>
+        <span class="deal__new" id="n2">1.750 €</span>
+        <span class="deal__when">ab Wartung Standard</span>
+      </div>
+      <div class="deal" data-a="d3">
+        <span class="deal__name"><i style="background:var(--premium)"></i>Premium</span>
+        <span class="deal__old">2.750 €<span class="strike" data-a="x3"></span></span>
+        <span class="deal__new" id="n3">2.750 €</span>
+        <span class="deal__when">mit Wartung Premium</span>
+      </div>
+    </div>
+    <div class="example" data-a="ex">
+      <span class="kicker">Rechenbeispiel Café</span>
+      <h4>Starter-Website + Wartung Basic</h4>
+      <div class="example__row"><span>Website</span><b class="free">0 €</b></div>
+      <div class="example__row"><span>Wartung</span><b>59 € / Monat</b></div>
+      <p class="example__day" data-a="day">Das sind <em>unter 2 € am Tag</em> –<br>weniger als ein Cappuccino.</p>
+    </div>
+    <p class="fine" data-a="fine">Rabatt bei 24 Monaten Mindestlaufzeit der Wartung, danach monatlich kündbar. Alle Preise zzgl. USt.</p>
+  </section>
+
+  <!-- ===================== SCENE 10 — reference ===================== -->
+  <section class="scene scene--ehso" id="s10">
+    <div class="col" style="width:700px; gap:24px">
+      <span class="flag" data-a="k">Echtes Kundenprojekt</span>
+      <h2 class="h3" data-a="h">Kein Versprechen.<br>Ein echtes Projekt.</h2>
+      <p class="ehso-name" data-a="n">EHSO'S <span>BURGER</span></p>
+      <ul class="ehso-list">
+        <li data-a="i1">Burger-Restaurant in Hamburg Lurup</li>
+        <li data-a="i2">Speisekarte mit über 50 Gerichten</li>
+        <li data-a="i3">Mehrere Standorte mit Öffnungszeiten</li>
+        <li data-a="i4">Bestellen über Lieferando, Wolt &amp; Uber Eats</li>
+      </ul>
+    </div>
+    <div class="browser" data-a="br">
+      <div class="browser__bar"><i></i><i></i><i></i><span>ehsos-burger · Startseite</span></div>
+      <div class="browser__screen"><img data-a="scroll" src="stills/ehsos-referenz-desktop.jpg" alt=""></div>
+    </div>
+  </section>
+
+  <!-- ===================== SCENE 11 — process ===================== -->
+  <section class="scene" id="s11">
+    <div class="center" style="gap:16px">
+      <span class="kicker" data-a="k">Der Ablauf</span>
+      <h2 class="h2" data-a="h">So einfach geht's.</h2>
+      <div class="steps">
+        <div class="steps__line" data-a="line"></div>
+        <div class="step" data-a="st1"><div class="step__num">1</div><h4>Gespräch</h4><p>Sie erzählen von Ihrem Betrieb. Wir hören zu.</p></div>
+        <div class="step" data-a="st2"><div class="step__num">2</div><h4>Entwurf</h4><p>Sie sehen Ihre Website, bevor sie online geht.</p></div>
+        <div class="step" data-a="st3"><div class="step__num" style="background:var(--premium)">3</div><h4>Online</h4><p>Kunden finden Sie. Wir kümmern uns um den Rest.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SCENE 12 — call to action ===================== -->
+  <section class="scene" id="s12">
+    <div class="center" style="gap:10px">
+      <h2 class="h1" data-a="l1" style="font-size:92px">Anna hat ihren Termin.</h2>
+      <h2 class="h1 accent" data-a="l2" style="font-size:92px">Ihre Kunden suchen schon.</h2>
+      <div class="cta-box" data-a="box">
+        <b>Welches Paket passt zu Ihnen?</b>
+        <span>Lassen Sie uns sprechen – alle Demos zum Ausprobieren finden Sie direkt hier.</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot" id="foot">
+    <span class="brand"><span class="brand__mark"><i></i></span>Website-Pakete</span>
+    <span class="chapter" id="chapter"></span>
+  </footer>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script>
+  'use strict';
+
+  window.DURATION = 104;
+  window.POSTER_TIME = 4.6;
+
+  var EASE = 'cubic-bezier(.2,.75,.25,1)';
+  var INOUT = 'cubic-bezier(.45,0,.35,1)';
+  var ANIMS = [];
+  var TICKS = [];
+  var seen = new WeakMap();
+
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function A(scene, key) { return $('#' + scene + ' [data-a="' + key + '"]'); }
+
+  // Schedule keyframes on an element at an absolute time (seconds). The
+  // first animation of a property fills backwards so the element waits in its
+  // start state; later ones only fill forwards, so they cannot override the
+  // earlier ones before they begin.
+  function anim(el, start, dur, kf, easing) {
+    if (!el) throw new Error('missing element at ' + start + 's');
+    var props = Object.keys(kf);
+    var had = seen.get(el) || new Set();
+    var fill = props.some(function (p) { return had.has(p); }) ? 'forwards' : 'both';
+    props.forEach(function (p) { had.add(p); });
+    seen.set(el, had);
+    var a = el.animate(kf, { delay: start * 1000, duration: dur * 1000, fill: fill, easing: easing || EASE });
+    a.pause();
+    ANIMS.push(a);
+    return a;
+  }
+  function rise(el, t, d, dist) { return anim(el, t, d || 0.8, { opacity: [0, 1], transform: ['translateY(' + (dist || 40) + 'px)', 'translateY(0)'] }); }
+  function pop(el, t, d) { return anim(el, t, d || 0.6, { opacity: [0, 1], transform: ['scale(0.92)', 'scale(1)'] }); }
+  function fadeIn(el, t, d) { return anim(el, t, d || 0.5, { opacity: [0, 1] }); }
+  function fadeOut(el, t, d) { return anim(el, t, d || 0.5, { opacity: [1, 0] }); }
+  function scene(id, start, end) {
+    var el = $('#' + id);
+    fadeIn(el, start, 0.55);
+    fadeOut(el, end - 0.5, 0.5);
+    return el;
+  }
+  function tap(el, t) { anim(el, t, 0.7, { opacity: [0, 0.9, 0], transform: ['scale(0.4)', 'scale(1)', 'scale(1.5)'] }); }
+  function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function typeInto(el, text, t0, t1) {
+    TICKS.push(function (t) {
+      el.textContent = text.slice(0, Math.round(clamp01((t - t0) / (t1 - t0)) * text.length));
+    });
+  }
+  function euro(n) { return Math.round(n).toLocaleString('de-DE') + ' €'; }
+
+  var CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  // ---------- Tier scenes ----------
+  var TIERS = [
+    { id: 's5', start: 31.0, end: 40.6, cls: 'starter', name: 'Starter', price: '1.000 €',
+      head: 'Die Visitenkarte, die man bei Google findet.',
+      ticks: ['Eine Seite mit allem Wichtigen', 'Perfekt auf Handy und Computer', 'Anfragen direkt per Formular'],
+      fits: ['Café', 'Friseur', 'Handwerk'],
+      desk: 'gastro-basic', deskLabel: 'Röstwerk Ottensen · Café', phone: 'tischlerei-basic', phoneLabel: 'Tischlerei Holtkamp' },
+    { id: 's6', start: 40.4, end: 50.0, cls: 'pro', name: 'Professional', price: '1.750 €',
+      head: 'Das Schaufenster, das Vertrauen verkauft.',
+      ticks: ['Bis zu 5 Seiten: Leistungen, Team, Referenzen', 'Bewegung, die hochwertig wirkt', 'Ihr Google-Unternehmensprofil eingerichtet'],
+      fits: ['Makler', 'Zahnarzt', 'Architekt'],
+      desk: 'zahnarzt-professional', deskLabel: 'Elbzahn · Zahnarztpraxis', phone: 'immobilien-professional', phoneLabel: 'Elbstein Immobilien' },
+    { id: 's7', start: 49.8, end: 59.4, cls: 'premium', name: 'Premium', price: '2.750 €', dark: true,
+      head: 'Der Flagship-Store, an den man sich erinnert.',
+      ticks: ['Eigenes Design – nichts von der Stange', 'Interaktive 3D-Erlebnisse', 'Texte vom Profi inklusive'],
+      fits: ['Logistik', 'Energie', 'Industrie'],
+      desk: 'maritim-premium', deskLabel: 'Nordmeridian Logistik', phone: 'windenergie-premium', phoneLabel: 'Elbwind Offshore' }
+  ];
+
+  var host = $('#tiers');
+  TIERS.forEach(function (T) {
+    var color = 'var(--' + T.cls + ')';
+    var soft = 'var(--' + T.cls + '-soft)';
+    var s = document.createElement('section');
+    s.className = 'scene tier' + (T.dark ? ' scene--dark' : '');
+    s.id = T.id;
+    s.innerHTML =
+      '<div class="col">' +
+        '<span class="pill" data-a="pill" style="background:' + (T.dark ? 'rgba(232,67,28,.18)' : soft) + ';color:' + color + '">' + T.name + '</span>' +
+        '<h2 class="h2" data-a="h">' + T.head + '</h2>' +
+        '<p class="price" data-a="price">' + T.price + ' <small>einmalig · zzgl. Wartung</small></p>' +
+        '<ul class="ticks">' + T.ticks.map(function (x, i) {
+          return '<li data-a="t' + i + '"><i style="background:' + color + '">' + CHECK + '</i>' + x + '</li>';
+        }).join('') + '</ul>' +
+        '<p class="fits" data-a="fits">Ideal für ' + T.fits.map(function (f) { return '<span>' + f + '</span>'; }).join('') + '</p>' +
+      '</div>' +
+      '<div class="browser" data-a="br"><div class="browser__bar"><i></i><i></i><i></i><span>Demo · ' + T.deskLabel + '</span></div>' +
+        '<div class="browser__screen"><img data-a="dscroll" src="stills/' + T.desk + '-desktop.jpg" alt=""></div></div>' +
+      '<div class="phone" data-a="ph"><div class="phone__screen"><div class="phone__notch"></div>' +
+        '<img data-a="pscroll" src="stills/' + T.phone + '-phone.jpg" alt=""></div></div>' +
+      '<p class="demo-label" data-a="lbl">Demos zum Selbst-Ausprobieren:<br><b>' + T.deskLabel + '</b> · <b>' + T.phoneLabel + '</b></p>';
+    host.parentNode.insertBefore(s, host);
+  });
+  host.remove();
+
+  // ================= TIMELINE =================
+  // Scene 1 — hook (0–6.6)
+  scene('s1', 0, 6.6);
+  rise(A('s1', 'k'), 0.2);
+  rise(A('s1', 'l1'), 0.5, 0.9, 60);
+  rise(A('s1', 'l2'), 1.4, 0.9, 60);
+  rise(A('s1', 'p'), 2.8);
+
+  // Anna's phone, alive 0.6–26.6
+  var phone = $('#phoneA');
+  anim(phone, 0.6, 1.1, { opacity: [0, 1], transform: ['translateY(160px) rotate(4deg)', 'translateY(0) rotate(0deg)'] });
+  anim(phone, 25.9, 0.7, { opacity: [1, 0], transform: ['translateY(0)', 'translateY(120px)'] }, INOUT);
+  typeInto($('#typed'), 'Friseur Winterhude', 2.2, 4.0);
+  TICKS.push(function (t) { $('#caret').style.opacity = (t < 4.6 && Math.floor(t * 2.2) % 2 === 0) || (t > 2.2 && t < 4.0) ? 1 : 0; });
+  anim($('#suggest'), 2.6, 0.5, { opacity: [0, 1] });
+
+  // Scene 2 — results (6.4–16.6)
+  anim($('#scr-results'), 5.0, 0.45, { opacity: [0, 1], transform: ['translateX(40px)', 'translateX(0)'] });
+  rise(A('scr-results', 'r1'), 5.3, 0.6, 30);
+  rise(A('scr-results', 'r2'), 5.5, 0.6, 30);
+  rise(A('scr-results', 'r3'), 5.7, 0.6, 30);
+  scene('s2', 6.4, 16.6);
+  rise(A('s2', 'k'), 6.6);
+  rise(A('s2', 'h'), 6.8);
+  rise(A('s2', 'v1'), 8.2, 0.7, 24);
+  anim(A('scr-results', 'r1'), 8.2, 0.5, { opacity: [1, 0.35] });
+  rise(A('s2', 'v2'), 9.4, 0.7, 24);
+  anim(A('scr-results', 'r3'), 9.4, 0.5, { opacity: [1, 0.35] });
+  rise(A('s2', 'v3'), 10.6, 0.7, 24);
+  anim($('#win'), 10.6, 0.6, { transform: ['scale(1)', 'scale(1.04)'] });
+  tap($('#tap1'), 12.0);
+  rise(A('s2', 'punch'), 12.6, 0.9);
+
+  // Scene 3 — the website works after hours (16.4–26.6)
+  anim($('#scr-site'), 12.6, 0.5, { opacity: [0, 1], transform: ['translateX(60px)', 'translateX(0)'] });
+  anim($('#siteImg'), 13.4, 4.4, { transform: ['translateY(0)', 'translateY(-2010px)'] }, INOUT);
+  anim($('#sheet'), 17.9, 0.6, { transform: ['translateY(110%)', 'translateY(0)'] });
+  typeInto($('#f1'), 'Anna K.', 18.6, 19.2);
+  typeInto($('#f2'), 'Schnitt & Föhnen', 19.4, 20.2);
+  typeInto($('#f3'), 'Donnerstag, 10:00 Uhr', 20.4, 21.3);
+  tap($('#tap2'), 21.7);
+  anim($('#sent'), 22.1, 0.4, { opacity: [0, 1] });
+  pop($('#sent .sent__ok'), 22.2, 0.5);
+  TICKS.push(function (t) { $('#clock').textContent = t < 18 ? '21:47' : t < 21 ? '21:48' : '21:49'; });
+  scene('s3', 16.4, 26.6);
+  rise(A('s3', 'k'), 16.6);
+  rise(A('s3', 'h'), 16.8);
+  anim(A('s3', 'n'), 22.6, 0.8, { opacity: [0, 1], transform: ['translateY(-40px) scale(0.96)', 'translateY(0) scale(1)'] });
+  rise(A('s3', 'p'), 23.8);
+
+  // Scene 4 — analogy (26.4–31.2)
+  scene('s4', 26.4, 31.2);
+  rise(A('s4', 'k'), 26.6);
+  rise(A('s4', 'h'), 26.8);
+  pop(A('s4', 'c1'), 27.8);
+  pop(A('s4', 'c2'), 28.1);
+  pop(A('s4', 'c3'), 28.4);
+
+  // Scenes 5–7 — tiers
+  TIERS.forEach(function (T) {
+    var s0 = T.start;
+    scene(T.id, s0, T.end);
+    rise(A(T.id, 'pill'), s0 + 0.2);
+    rise(A(T.id, 'h'), s0 + 0.4);
+    rise(A(T.id, 'price'), s0 + 1.2);
+    T.ticks.forEach(function (_, i) { rise(A(T.id, 't' + i), s0 + 2.0 + i * 0.35, 0.6, 24); });
+    rise(A(T.id, 'fits'), s0 + 3.4);
+    anim(A(T.id, 'br'), s0 + 0.3, 1.0, { opacity: [0, 1], transform: ['translateX(80px)', 'translateX(0)'] });
+    anim(A(T.id, 'ph'), s0 + 0.8, 1.0, { opacity: [0, 1], transform: ['translateY(80px) scale(0.74)', 'translateY(0) scale(0.74)'] });
+    rise(A(T.id, 'lbl'), s0 + 1.6, 0.6, 16);
+    anim(A(T.id, 'dscroll'), s0 + 1.8, 7.0, { transform: ['translateY(0)', 'translateY(-1150px)'] }, INOUT);
+    anim(A(T.id, 'pscroll'), s0 + 2.2, 6.6, { transform: ['translateY(0)', 'translateY(-1500px)'] }, INOUT);
+  });
+
+  // Scene 8 — maintenance (59.2–70.0)
+  scene('s8', 59.2, 70.0);
+  rise(A('s8', 'k'), 59.4);
+  rise(A('s8', 'h'), 59.6);
+  rise(A('s8', 'b1'), 60.9, 0.6, 24);
+  fadeIn(A('s8', 'dots'), 61.8, 0.3);
+  [0, 1, 2].forEach(function (i) {
+    var dot = $('#s8 .typing i:nth-child(' + (i + 1) + ')');
+    [0, 0.5, 1.0].forEach(function (k, j) {
+      anim(dot, 61.9 + k + i * 0.15, 0.4, { transform: ['translateY(0)', 'translateY(-8px)', 'translateY(0)'] }, 'ease-in-out');
+    });
+  });
+  // The dots collapse and the reply takes their place.
+  anim(A('s8', 'dots'), 63.2, 0.25, { opacity: [1, 0], height: ['56px', '0px'], padding: ['22px 26px', '0px 26px'], marginTop: ['0px', '-16px'] });
+  rise(A('s8', 'b2'), 63.3, 0.6, 24);
+  rise(A('s8', 'c1'), 64.4, 0.7, 40);
+  rise(A('s8', 'c2'), 64.8, 0.7, 40);
+  rise(A('s8', 'c3'), 65.2, 0.7, 40);
+
+  // Scene 9 — combination discount (69.8–82.0)
+  scene('s9', 69.8, 82.0);
+  rise(A('s9', 'k'), 70.0);
+  rise(A('s9', 'h'), 70.2);
+  [[1, 1000], [2, 1750], [3, 2750]].forEach(function (d, i) {
+    var t = 71.4 + i * 0.9;
+    rise(A('s9', 'd' + d[0]), t, 0.7, 30);
+    anim(A('s9', 'x' + d[0]), t + 0.9, 0.4, { transform: ['scaleX(0)', 'scaleX(1)'] });
+    var out = $('#n' + d[0]);
+    TICKS.push(function (now) {
+      var p = clamp01((now - (t + 1.0)) / 0.9);
+      p = 1 - Math.pow(1 - p, 3);
+      out.textContent = euro(d[1] * (1 - p));
+    });
+  });
+  anim(A('s9', 'ex'), 75.4, 0.9, { opacity: [0, 1], transform: ['translateX(60px)', 'translateX(0)'] });
+  rise(A('s9', 'day'), 76.6, 0.7, 20);
+  rise(A('s9', 'fine'), 77.2, 0.6, 12);
+
+  // Scene 10 — reference (81.8–89.6)
+  scene('s10', 81.8, 89.6);
+  rise(A('s10', 'k'), 82.0);
+  rise(A('s10', 'h'), 82.2);
+  rise(A('s10', 'n'), 82.9);
+  ['i1', 'i2', 'i3', 'i4'].forEach(function (k, i) { rise(A('s10', k), 83.6 + i * 0.3, 0.6, 20); });
+  anim(A('s10', 'br'), 82.1, 1.0, { opacity: [0, 1], transform: ['translateX(80px)', 'translateX(0)'] });
+  anim(A('s10', 'scroll'), 83.4, 5.8, { transform: ['translateY(0)', 'translateY(-640px)'] }, INOUT);
+
+  // Scene 11 — process (89.4–97.0)
+  scene('s11', 89.4, 97.0);
+  rise(A('s11', 'k'), 89.6);
+  rise(A('s11', 'h'), 89.8);
+  anim(A('s11', 'line'), 90.6, 2.4, { transform: ['scaleX(0)', 'scaleX(1)'] }, INOUT);
+  rise(A('s11', 'st1'), 90.6, 0.7);
+  rise(A('s11', 'st2'), 91.6, 0.7);
+  rise(A('s11', 'st3'), 92.6, 0.7);
+
+  // Scene 12 — call to action (96.8–104)
+  scene('s12', 96.8, 104.6);
+  rise(A('s12', 'l1'), 97.0, 0.9, 50);
+  rise(A('s12', 'l2'), 98.0, 0.9, 50);
+  pop(A('s12', 'box'), 99.4, 0.8);
+
+  // ---------- Footer: chapter label, dark-scene colours, progress ----------
+  var CHAPTERS = [
+    [0, 'Ein normaler Abend'], [16.5, 'Rund um die Uhr'], [26.5, 'Die Pakete'],
+    [59.3, 'Wartung'], [69.9, 'Kombi-Rabatt'], [81.9, 'Referenz'], [89.5, 'Ablauf'], [96.9, '']
+  ];
+  var DARK = [[49.8 + 0.3, 59.4 - 0.25], [81.8 + 0.3, 89.6 - 0.25]];
+  var foot = $('#foot');
+  var chapter = $('#chapter');
+  TICKS.push(function (t) {
+    var label = '';
+    CHAPTERS.forEach(function (c) { if (t >= c[0]) label = c[1]; });
+    chapter.textContent = label;
+    foot.classList.toggle('on-dark', DARK.some(function (r) { return t >= r[0] && t < r[1]; }));
+    $('#progress').style.transform = 'scaleX(' + (t / window.DURATION) + ')';
+  });
+
+  window.seek = function (t) {
+    var ms = t * 1000;
+    for (var i = 0; i < ANIMS.length; i++) ANIMS[i].currentTime = ms;
+    for (var j = 0; j < TICKS.length; j++) TICKS[j](t);
+  };
+
+  // Ready once every image is decoded, so no frame shows a half-loaded still.
+  Promise.all(Array.prototype.map.call(document.images, function (img) {
+    return img.decode().catch(function () {});
+  })).then(function () {
+    window.seek(0);
+    window.STORYBOARD_READY = true;
+  });
+</script>
+</body>
+</html>

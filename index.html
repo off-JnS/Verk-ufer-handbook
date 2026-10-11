@@ -280,6 +280,34 @@
       border-radius: 12px;
     }
 
+    /* ---------- Explainer video ----------
+       Plays muted-friendly: every message is on screen, so it works in a
+       quiet shop as well as in a café. */
+    .video-frame {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--night);
+      box-shadow: var(--shadow-img);
+    }
+    .video-frame video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .video-chapters { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; list-style: none; }
+    .video-chapters button {
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      min-height: 2.25rem;
+      padding: 0 0.8rem;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .video-chapters button b { color: var(--fog); font-weight: 700; margin-right: 0.3rem; font-variant-numeric: tabular-nums; }
+    .video-chapters button:active { transform: scale(0.97); }
+
     /* ---------- Buttons ---------- */
     .btn {
       display: inline-flex;
@@ -1070,6 +1098,7 @@
     <div class="wrap topbar__inner">
       <a class="brand" href="#top"><span class="brand__mark" aria-hidden="true"><i></i></span>Website-Pakete</a>
       <nav class="topnav" aria-label="Abschnitte">
+        <a href="#video">Video</a>
         <a href="#demos">Demos</a>
         <a href="#referenz">Referenz</a>
         <a href="#pakete">Pakete</a>
@@ -1094,6 +1123,7 @@
         </p>
         <div class="hero__cta">
           <a class="btn" href="#demos">Demos ansehen</a>
+          <a class="btn btn--ghost" href="#video"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg>Video (1:44)</a>
           <a class="btn btn--ghost" href="#pakete">Pakete &amp; Preise</a>
         </div>
         <ul class="facts">
@@ -1107,6 +1137,42 @@
         <img src="assets/thumbs/aviation-premium-desktop.webp" width="960" height="600" alt="">
         <img src="assets/thumbs/maritim-premium-desktop.webp" width="960" height="600" alt="">
         <img class="hero__phone" src="assets/thumbs/zahnarzt-professional-phone.webp" width="260" height="563" alt="">
+      </div>
+    </section>
+
+    <!-- ============================================================
+         EXPLAINER VIDEO — rendered from tools/video/storyboard.html by
+         tools/render-video.mjs. Chapter times are in data-t (seconds)
+         and must follow the storyboard's scene starts.
+         ============================================================ -->
+    <section class="band" id="video">
+      <div class="wrap">
+        <div class="band__head">
+          <span class="band__kicker">Video · 1:44</span>
+          <h2>Warum eine Website Kunden bringt</h2>
+          <p class="band__sub">
+            Eine Kundin sucht abends einen Friseur – und bucht dort, wo die Website überzeugt.
+            Danach: die drei Pakete, die Wartung und wie die Website bis auf 0&nbsp;€ sinkt.
+            Funktioniert auch ohne Ton.
+          </p>
+        </div>
+        <div class="video-frame">
+          <video id="pitch-video" controls playsinline preload="metadata"
+                 poster="assets/video/verkaufsvideo-poster.jpg" width="1920" height="1080"
+                 aria-label="Erklärvideo: Warum eine Website Kunden bringt">
+            <source src="assets/video/verkaufsvideo.mp4" type="video/mp4">
+            <a href="assets/video/verkaufsvideo.mp4">Video herunterladen (MP4)</a>
+          </video>
+        </div>
+        <ul class="video-chapters" aria-label="Kapitel">
+          <li><button type="button" data-t="0"><b>0:00</b>Annas Abend</button></li>
+          <li><button type="button" data-t="16.5"><b>0:16</b>Rund um die Uhr</button></li>
+          <li><button type="button" data-t="26.5"><b>0:26</b>Die Pakete</button></li>
+          <li><button type="button" data-t="59.3"><b>0:59</b>Wartung</button></li>
+          <li><button type="button" data-t="69.9"><b>1:09</b>Kombi-Rabatt</button></li>
+          <li><button type="button" data-t="81.9"><b>1:21</b>Referenz</button></li>
+          <li><button type="button" data-t="89.5"><b>1:29</b>Ablauf</button></li>
+        </ul>
       </div>
     </section>
 
@@ -1818,6 +1884,22 @@
         if (id === 'top') window.scrollTo({ top: 0, behavior: scrollBehavior() });
         else target.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
       });
+
+      /* ---------- Explainer video ---------------------------------- */
+      var pitch = document.getElementById('pitch-video');
+      if (pitch) {
+        toArray(document.querySelectorAll('.video-chapters [data-t]')).forEach(function (b) {
+          b.addEventListener('click', function () {
+            pitch.currentTime = parseFloat(b.dataset.t);
+            pitch.play().catch(function () {});
+          });
+        });
+        /* Opening a demo pauses the video, so it does not keep running
+           behind the full-screen viewer. */
+        document.addEventListener('click', function (e) {
+          if (e.target.closest && e.target.closest('[data-demo]')) pitch.pause();
+        });
+      }
 
       /* ---------- Active section in top nav / tab bar -------------- */
       var topLinks = toArray(document.querySelectorAll('.topnav a'));
