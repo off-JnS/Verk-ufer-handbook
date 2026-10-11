@@ -21,7 +21,7 @@ The root [`index.html`](index.html) hub is the **client-facing showcase**, built
 
 **Thumbnails.** The gallery images in `assets/thumbs/` are real screenshots (desktop 1280×800 and phone 390×844) encoded as WebP, ~480 KB in total. After changing a demo, regenerate them with `npx -y -p playwright node tools/capture-thumbs.mjs` (uses the locally installed Google Chrome).
 
-**Explainer video.** Right below the hero, the hub embeds a 1:44 sales video in German (`assets/video/verkaufsvideo.mp4`, H.264 1080p, plus a poster JPEG), with chapter buttons that jump inside it. It tells one everyday story a prospect recognises — Anna searches "Friseur Winterhude" at 21:47, skips the salon without a website, books at the one with photos, prices and a request form while the salon is closed — then explains the three tiers as *Visitenkarte / Schaufenster / Flagship-Store* using real scrolling screenshots of the demos, the maintenance plans (with a chat example), the combination discount counting down to 0 € (incl. the 24-month fine print), the Ehso's reference, a three-step process and a call to action. Every message is on screen, so it works without sound.
+**Explainer video.** Right below the hero, the hub embeds a 2:32 sales video in German (`assets/video/verkaufsvideo.mp4`, H.264 1080p, plus a poster JPEG), with chapter buttons that jump inside it. It tells one everyday story a prospect recognises — Anna searches "Friseur Winterhude" at 21:47, skips the salon without a website, books at the one with photos, prices and a request form while the salon is closed — then explains the three tiers as *Visitenkarte / Schaufenster / Flagship-Store* using real scrolling screenshots of the demos, the maintenance plans (with a chat example), the combination discount counting down to 0 € (incl. the 24-month fine print), the Ehso's reference, a three-step process and a call to action. Every message is on screen, so it works without sound. Each scene carries one message, lists are replaced by icons, and every line stays up for at least words ÷ 2.5 + 1.5 s; scene lengths live in `SCENES` in the storyboard and start times are derived from them.
 
 The video is code, not an editor project: `tools/video/storyboard.html` is a deterministic Web Animations timeline (open it and call `seek(12.5)` in the console to inspect a frame), and `tools/render-video.mjs` captures fresh demo stills, steps the timeline frame by frame in headless Chrome and encodes with ffmpeg:
 
@@ -31,7 +31,7 @@ node tools/render-video.mjs                    # stills + video + poster (~10 mi
 node tools/render-video.mjs --preview 4.6,36   # single PNG frames for checking layout
 ```
 
-**Prices are baked into the video** (scenes 5–9). When prices or maintenance contents change, update `storyboard.html` and re-render, and keep the chapter `data-t` values in `index.html` in sync with the scene start times.
+**Prices are baked into the video** (scenes 5–9). When prices or maintenance contents change, update `storyboard.html` and re-render, and copy the chapter times the render prints (`chapter  19.7s  …`) into the `data-t` buttons in `index.html`.
 
 **Stack:** 100 % vanilla HTML/CSS/JS. No frameworks, no build step. External resources: Google Fonts, `picsum.photos` placeholder imagery, and (maritim-premium only) Three.js from the jsDelivr CDN. The two newer Premium heroes use hand-written Canvas 2D — zero dependencies.
 

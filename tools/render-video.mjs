@@ -156,6 +156,7 @@ async function renderVideo() {
   await mkdir(OUT, { recursive: true });
   const { ctx, page } = await openStoryboard();
   const { duration, poster } = await page.evaluate(() => ({ duration: window.DURATION, poster: window.POSTER_TIME }));
+  console.log(`render ${duration}s`);
   const frames = Math.round(duration * FPS);
 
   const enc = ffmpeg([
@@ -185,5 +186,8 @@ async function renderVideo() {
   posterEnc.stdin.end(await page.screenshot({ type: 'png' }));
   await posterEnc.done;
   console.log(`video  assets/video/verkaufsvideo.mp4  ${frames} frames, ${duration}s`);
+  // Chapter starts for the data-t buttons under the video in index.html.
+  const chapters = await page.evaluate(() => window.CHAPTERS);
+  for (const c of chapters) console.log(`chapter  ${c.t.toFixed(1)}s  ${c.label}`);
   await ctx.close();
 }
